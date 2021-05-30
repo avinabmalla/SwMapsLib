@@ -11,81 +11,110 @@ namespace SwMapsLib.Utils
 	{
 		public static string ReadString(this SQLiteDataReader reader, string colName)
 		{
-			int colIndex = reader.GetOrdinal(colName);
+			try
+			{
+				int colIndex = reader.GetOrdinal(colName);
 
-			if (!reader.IsDBNull(colIndex))
-			{
-				return reader[colName].ToString();
+				if (!reader.IsDBNull(colIndex))
+				{
+					return reader[colName].ToString();
+				}
+				else
+				{
+					return default(string);
+				}
 			}
-			else
-			{
-				return null;
-			}
+			catch { return default(string); }
 		}
 
 		public static int ReadInt32(this SQLiteDataReader reader, string colName)
 		{
-			int colIndex = reader.GetOrdinal(colName);
+			try
+			{
+				int colIndex = reader.GetOrdinal(colName);
 
-			if (!reader.IsDBNull(colIndex))
-			{
-				return Convert.ToInt32(reader[colName]);
+				if (!reader.IsDBNull(colIndex))
+				{
+					return Convert.ToInt32(reader[colName]);
+				}
+				else
+				{
+					return default(int);
+				}
 			}
-			else
-			{
-				return default(int);
-			}
+			catch { return default(int); }
 		}
 
 		public static long ReadInt64(this SQLiteDataReader reader, string colName)
 		{
-			int colIndex = reader.GetOrdinal(colName);
+			try
+			{
+				int colIndex = reader.GetOrdinal(colName);
 
-			if (!reader.IsDBNull(colIndex))
-			{
-				return Convert.ToInt64(reader[colName]);
+				if (!reader.IsDBNull(colIndex))
+				{
+					return Convert.ToInt64(reader[colName]);
+				}
+				else
+				{
+					return default(long);
+				}
 			}
-			else
-			{
-				return default(long);
-			}
+			catch { return default(long); }
 		}
 
 		public static float ReadSingle(this SQLiteDataReader reader, string colName)
 		{
-			int colIndex = reader.GetOrdinal(colName);
+			try
+			{
+				int colIndex = reader.GetOrdinal(colName);
 
-			if (!reader.IsDBNull(colIndex))
-				return Convert.ToSingle(reader[colName]);
-			else
-				return default(float);
+				if (!reader.IsDBNull(colIndex))
+					return Convert.ToSingle(reader[colName]);
+				else
+					return default(float);
+			}
+			catch { return default(float); }
 		}
 
 
 		public static double ReadDouble(this SQLiteDataReader reader, string colName)
 		{
-			int colIndex = reader.GetOrdinal(colName);
+			try
+			{
+				int colIndex = reader.GetOrdinal(colName);
 
-			if (!reader.IsDBNull(colIndex))
-				return Convert.ToDouble(reader[colName]);
-			else
-				return default(double);
+				if (!reader.IsDBNull(colIndex))
+					return Convert.ToDouble(reader[colName]);
+				else
+					return default(double);
+			}
+			catch { return default(float); }
 		}
 
 		public static byte[] ReadBlob(this SQLiteDataReader reader, string colName)
 		{
-			int colIndex = reader.GetOrdinal(colName);
+			try
+			{
+				int colIndex = reader.GetOrdinal(colName);
 
-			if (!reader.IsDBNull(colIndex))
-				return (byte[])reader[colName];
-			else
-				return default(byte[]);
+				if (!reader.IsDBNull(colIndex))
+					return (byte[])reader[colName];
+				else
+					return default(byte[]);
+			}
+			catch { return default(byte[]); }
 		}
 
 
-		public static bool ExecuteSQL(this SQLiteConnection conn, string sql)
+		public static bool ExecuteSQL(this SQLiteConnection conn, string sql, SQLiteTransaction sqlTrans = null)
 		{
-			var cmd = new SQLiteCommand(sql, conn);
+			SQLiteCommand cmd;
+			if (sqlTrans != null)
+				cmd = new SQLiteCommand(sql, conn, sqlTrans);
+			else
+				cmd = new SQLiteCommand(sql, conn);
+			
 			try
 			{
 				cmd.ExecuteNonQuery();
@@ -116,13 +145,13 @@ namespace SwMapsLib.Utils
 				values.Add("?");
 			}
 			var sql = $"INSERT INTO {tableName}({String.Join(",", fields)}) VALUES({String.Join(",", values)})";
-			
+
 			SQLiteCommand cmd;
 			if (sqlTrans != null)
 				cmd = new SQLiteCommand(sql, conn, sqlTrans);
 			else
 				cmd = new SQLiteCommand(sql, conn);
-			
+
 			foreach (var f in contentValues.Keys)
 			{
 				cmd.Parameters.AddWithValue(f, contentValues[f]);

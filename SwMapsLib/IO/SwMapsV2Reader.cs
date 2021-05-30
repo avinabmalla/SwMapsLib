@@ -60,6 +60,7 @@ namespace SwMapsLib.IO
 				var a = new SwMapsProjectAttribute();
 				a.Name = reader.ReadString("attr");
 				a.Value = reader.ReadString("value");
+				
 				a.IsRequired = reader.ReadInt32("required_field") == 1;
 
 				try

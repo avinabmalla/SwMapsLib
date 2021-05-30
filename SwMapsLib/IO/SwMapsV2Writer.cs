@@ -55,7 +55,7 @@ namespace SwMapsLib.IO
 
 		void CreateTables()
 		{
-			conn.ExecuteSQL("CREATE TABLE project_info(attr TEXT, value TEXT);");
+			conn.ExecuteSQL("CREATE TABLE project_info(attr TEXT, value TEXT);", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE project_attributes(" +
 				"attr TEXT," +
@@ -63,7 +63,7 @@ namespace SwMapsLib.IO
 				"data_type TEXT," +
 				"field_choices TEXT," +
 				"required_field INTEGER," +
-				"field_length INTEGER);");
+				"field_length INTEGER);", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE external_layers(" +
 				"uuid TEXT," +
@@ -74,7 +74,7 @@ namespace SwMapsLib.IO
 				"active NUMBER," +
 				"wms_layer_name TEXT," +
 				"gpkg_layers TEXT," +
-				"cache NUMBER);");
+				"cache NUMBER);", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE feature_layers(" +
 				"uuid TEXT," +
@@ -88,26 +88,26 @@ namespace SwMapsLib.IO
 				"label_field_id TEXT," +
 				"active INTEGER," +
 				"drawn INTEGER," +
-				"png_symbol BLOB)");
+				"png_symbol BLOB)", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE attribute_fields(" +
 				"uuid TEXT," +
 				"layer_id TEXT," +
 				"field_name TEXT," +
 				"data_type TEXT," +
-				"field_choices TEXT);");
+				"field_choices TEXT);", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE attribute_values(" +
 				"item_id TEXT," +
 				"field_id TEXT," +
 				"data_type TEXT," +
-				"value TEXT);");
+				"value TEXT);", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE features(" +
 				"uuid TEXT," +
 				"layer_id TEXT," +
 				"name TEXT," +
-				"remarks TEXT)");
+				"remarks TEXT)", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE points(" +
 				"uuid TEXT," +
@@ -123,12 +123,12 @@ namespace SwMapsLib.IO
 				"fix_quality NUMBER," +
 				"speed NUMBER," +
 				"snap_id TEXT," +
-				"additional_data TEXT)");
+				"additional_data TEXT)", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE photos(" +
 				"uuid TEXT," +
 				"remarks TEXT," +
-				"photo_path TEXT)");
+				"photo_path TEXT)", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE layer_style(" +
 				"layer_id TEXT," +
@@ -139,13 +139,13 @@ namespace SwMapsLib.IO
 				"color INTEGER," +
 				"fill_color INTEGER," +
 				"line_width INTEGER," +
-				"label_field TEXT)");
+				"label_field TEXT)", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE tracks(" +
 				"uuid TEXT," +
 				"name TEXT," +
 				"color TEXT," +
-				"description TEXT);");
+				"description TEXT);", sqlTrans);
 		}
 
 		void WriteProjectAttributes()
