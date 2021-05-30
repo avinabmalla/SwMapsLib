@@ -21,7 +21,7 @@ namespace SwMapsLib.Data
 		public double InstrumentHeight;
 		public int FixID;
 		public string SnapID;
-
+		public string AdditionalData;
 		public override string ToString()
 		{
 			return $"{Latitude:0.0000000}, {Longitude:0.0000000}";

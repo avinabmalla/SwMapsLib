@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
 using SwMapsLib.Utils;
+using System.IO;
 
 namespace SwMapsLib.IO
 {
@@ -14,6 +15,8 @@ namespace SwMapsLib.IO
 		SwMapsProject Project;
 
 		SQLiteConnection conn;
+		SQLiteTransaction sqlTrans;
+
 
 		public SwMapsV1Writer(SwMapsProject project)
 		{
@@ -22,8 +25,11 @@ namespace SwMapsLib.IO
 
 		public void WriteSwmapsDb(string path)
 		{
+			if (File.Exists(path)) File.Delete(path);
+
 			conn = new SQLiteConnection($"Data Source={path};Version=3;");
 			conn.Open();
+			sqlTrans = conn.BeginTransaction();
 
 			CreateTables();
 
@@ -38,6 +44,7 @@ namespace SwMapsLib.IO
 			WritePhotos();
 			WriteTracks();
 
+			sqlTrans.Commit();
 			conn.Close();
 		}
 
@@ -147,7 +154,7 @@ namespace SwMapsLib.IO
 						cv1["elv"] = pt.Elevation;
 						cv1["time"] = pt.Time;
 						cv1["start_time"] = pt.StartTime;
-						conn.Insert("polyline_points", cv);
+						conn.Insert("polyline_points", cv1);
 					}
 				}
 			}

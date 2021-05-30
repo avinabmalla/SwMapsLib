@@ -24,6 +24,6 @@ namespace SwMapsLib.Data
 		public List<SwMapsAttributeField> AttributeFields = new List<SwMapsAttributeField>();
 
 
-		public string LabelFieldName => AttributeFields.FirstOrDefault(af => af.UUID == LabelFieldID).FieldName;
+		public string LabelFieldName => AttributeFields.FirstOrDefault(af => af.UUID == LabelFieldID)?.FieldName ?? "";
 	}
 }

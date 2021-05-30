@@ -15,7 +15,7 @@ namespace SwMapsLib.IO
 		public readonly string SwMapsPath;
 		SQLiteConnection conn;
 
-		public Dictionary<string, string> LayerIDs = new Dictionary<string, string>();
+		public Dictionary<string, string> LayerIDs = new Dictionary<string, string>(); //name, uuid
 		public Dictionary<int, string> PointIDs = new Dictionary<int, string>();
 		public Dictionary<string, string> LinePolygonIDs = new Dictionary<string, string>();
 		public Dictionary<string, string> AttributeFieldIDs = new Dictionary<string, string>();
@@ -55,7 +55,9 @@ namespace SwMapsLib.IO
 					var a = new SwMapsAttributeField();
 					a.LayerID = layer;
 					a.FieldName = reader.ReadString("field");
-					a.UUID = layer + "||" + a.FieldName;
+
+					a.UUID = Guid.NewGuid().ToString();
+					AttributeFieldIDs[layer + "||" + a.FieldName] = a.UUID;
 
 					var dataType = reader.ReadString("data_type").ToUpper();
 					if (dataType == "TEXT")
@@ -85,6 +87,7 @@ namespace SwMapsLib.IO
 				while (reader.Read())
 				{
 					var pt = new SwMapsPoint();
+					pt.ID = Guid.NewGuid().ToString();
 					pt.Latitude = reader.ReadDouble("lat");
 					pt.Longitude = reader.ReadDouble("lon");
 					pt.Elevation = reader.ReadDouble("elv");
@@ -105,6 +108,7 @@ namespace SwMapsLib.IO
 				while (reader.Read())
 				{
 					var pt = new SwMapsPoint();
+					pt.ID = Guid.NewGuid().ToString();
 					pt.Latitude = reader.ReadDouble("lat");
 					pt.Longitude = reader.ReadDouble("lon");
 					pt.Elevation = reader.ReadDouble("elv");
@@ -129,7 +133,13 @@ namespace SwMapsLib.IO
 					var attr = new SwMapsAttributeValue();
 					attr.Value = reader.ReadString("value");
 					attr.FieldName = reader.ReadString("field");
-					attr.FieldID = itemLayer + "||" + attr.FieldName;
+					
+					try
+					{
+						attr.FieldID = AttributeFieldIDs[itemLayer + "||" + attr.FieldName];
+					}
+					catch { continue; }
+
 					attr.FeatureID = fid;
 
 					var dataType = reader.ReadString("data_type").ToUpper();
@@ -187,7 +197,13 @@ namespace SwMapsLib.IO
 					f.UUID = reader.ReadString("uuid");
 					f.Name = reader.ReadInt32("id").ToString();
 					f.Remarks = reader.ReadString("description");
-					f.LayerID = reader.ReadString("layer");
+					var layerName = reader.ReadString("layer");
+					try
+					{
+						f.LayerID = LayerIDs[layerName];
+					}
+					catch { continue; }
+
 					f.GeometryType = SwMapsGeometryType.Point;
 
 					var pt = new SwMapsPoint();
@@ -204,7 +220,9 @@ namespace SwMapsLib.IO
 					f.Points = new List<SwMapsPoint>();
 					f.Points.Add(pt);
 
-					f.AttributeValues = ReadAllAttributeValues(f.UUID, f.FeatureID, f.LayerID);
+					PointIDs[f.FeatureID] = f.UUID;
+
+					f.AttributeValues = ReadAllAttributeValues(f.UUID, f.FeatureID, layerName);
 					ret.Add(f);
 				}
 			return ret;
@@ -221,13 +239,26 @@ namespace SwMapsLib.IO
 					f.FeatureID = reader.ReadInt32("id");
 					f.UUID = reader.ReadString("uuid");
 					f.Name = reader.ReadString("name");
-					f.LayerID = reader.ReadString("layer");
+
+					var layerName = reader.ReadString("layer");
+
+					try
+					{
+						f.LayerID = LayerIDs[layerName];
+					}
+					catch { continue; }
+
 					f.Remarks = reader.ReadString("description");
 					var closed = reader.ReadInt32("closed") != 0;
 					f.GeometryType = closed ? SwMapsGeometryType.Polygon : SwMapsGeometryType.Line;
 					f.Points = ReadPolylinePoints(f.UUID, f.FeatureID);
-					f.AttributeValues = ReadAllAttributeValues(f.UUID, f.FeatureID, f.LayerID);
+
+					LinePolygonIDs[f.Name] = f.UUID;
+					
+					f.AttributeValues = ReadAllAttributeValues(f.UUID, f.FeatureID, layerName);
 					ret.Add(f);
+
+
 				}
 			return ret;
 		}

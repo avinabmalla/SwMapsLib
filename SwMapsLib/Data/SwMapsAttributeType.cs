@@ -15,4 +15,11 @@ namespace SwMapsLib.Data
 		Audio,
 		Video
 	}
+
+	public enum SwMapsProjectAttributeType
+	{
+		Text,
+		Numeric,
+		Options
+	}
 }

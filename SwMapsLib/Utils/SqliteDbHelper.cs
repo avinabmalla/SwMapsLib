@@ -106,7 +106,7 @@ namespace SwMapsLib.Utils
 			}
 		}
 
-		public static long Insert(this SQLiteConnection conn, string tableName, Dictionary<string, object> contentValues)
+		public static long Insert(this SQLiteConnection conn, string tableName, Dictionary<string, object> contentValues, SQLiteTransaction sqlTrans = null)
 		{
 			var fields = new List<string>();
 			var values = new List<string>();
@@ -116,8 +116,13 @@ namespace SwMapsLib.Utils
 				values.Add("?");
 			}
 			var sql = $"INSERT INTO {tableName}({String.Join(",", fields)}) VALUES({String.Join(",", values)})";
-			var cmd = new SQLiteCommand(sql, conn);
-
+			
+			SQLiteCommand cmd;
+			if (sqlTrans != null)
+				cmd = new SQLiteCommand(sql, conn, sqlTrans);
+			else
+				cmd = new SQLiteCommand(sql, conn);
+			
 			foreach (var f in contentValues.Keys)
 			{
 				cmd.Parameters.AddWithValue(f, contentValues[f]);
@@ -127,5 +132,6 @@ namespace SwMapsLib.Utils
 			return conn.GetLastInsertedRowID();
 
 		}
+
 	}
 }

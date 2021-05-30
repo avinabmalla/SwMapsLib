@@ -61,6 +61,25 @@ namespace SwMapsLib.IO
 				a.Name = reader.ReadString("attr");
 				a.Value = reader.ReadString("value");
 				a.IsRequired = reader.ReadInt32("required_field") == 1;
+
+				try
+				{
+					var dataType = reader.ReadString("data_type").ToUpper();
+					if (dataType == "TEXT")
+						a.DataType = SwMapsProjectAttributeType.Text;
+					else if (dataType == "NUMERIC")
+						a.DataType = SwMapsProjectAttributeType.Numeric;
+					else if (dataType == "OPTIONS")
+						a.DataType = SwMapsProjectAttributeType.Options;
+				}
+				catch { }
+
+				try
+				{
+					a.Choices = reader.ReadString("field_choices").Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+				}
+				catch { }
+
 				ret.Add(a);
 			}
 			return ret;
