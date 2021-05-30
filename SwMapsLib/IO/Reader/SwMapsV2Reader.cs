@@ -15,7 +15,7 @@ namespace SwMapsLib.IO
 		public readonly string Swm2Path;
 
 		SQLiteConnection conn;
-		
+
 		public SwMapsV2Reader(string swm2Path)
 		{
 			Swm2Path = swm2Path;
@@ -60,26 +60,14 @@ namespace SwMapsLib.IO
 				var a = new SwMapsProjectAttribute();
 				a.Name = reader.ReadString("attr");
 				a.Value = reader.ReadString("value");
-				
+
 				a.IsRequired = reader.ReadInt32("required_field") == 1;
 
-				try
-				{
-					var dataType = reader.ReadString("data_type").ToUpper();
-					if (dataType == "TEXT")
-						a.DataType = SwMapsProjectAttributeType.Text;
-					else if (dataType == "NUMERIC")
-						a.DataType = SwMapsProjectAttributeType.Numeric;
-					else if (dataType == "OPTIONS")
-						a.DataType = SwMapsProjectAttributeType.Options;
-				}
-				catch { }
+				var dataType = reader.ReadString("data_type").ToUpper();
+				a.DataType = SwMapsTypes.ProjectAttributeTypeFromString(dataType);
 
-				try
-				{
-					a.Choices = reader.ReadString("field_choices").Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-				}
-				catch { }
+				var choices = reader.ReadString("field_choices");
+				a.Choices = choices.Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
 				ret.Add(a);
 			}
@@ -99,19 +87,10 @@ namespace SwMapsLib.IO
 					a.UUID = reader.ReadString("uuid");
 					a.LayerID = reader.ReadString("layer_id");
 					a.FieldName = reader.ReadString("field_name");
+
 					var dataType = reader.ReadString("data_type").ToUpper();
-					if (dataType == "TEXT")
-						a.DataType = SwMapsAttributeType.Text;
-					else if (dataType == "NUMERIC")
-						a.DataType = SwMapsAttributeType.Numeric;
-					else if (dataType == "OPTIONS")
-						a.DataType = SwMapsAttributeType.Options;
-					else if (dataType == "PHOTO")
-						a.DataType = SwMapsAttributeType.Photo;
-					else if (dataType == "AUDIO")
-						a.DataType = SwMapsAttributeType.Audio;
-					else if (dataType == "VIDEO")
-						a.DataType = SwMapsAttributeType.Video;
+					a.DataType = SwMapsTypes.AttributeTypeFromString(dataType);
+
 
 					a.Choices = reader.ReadString("field_choices").Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 					if (ret.Any(at => at.UUID == a.UUID)) continue;
@@ -136,18 +115,8 @@ namespace SwMapsLib.IO
 					a.Value = reader.ReadString("value");
 
 					var dataType = reader.ReadString("data_type").ToUpper();
-					if (dataType == "TEXT")
-						a.DataType = SwMapsAttributeType.Text;
-					else if (dataType == "NUMERIC")
-						a.DataType = SwMapsAttributeType.Numeric;
-					else if (dataType == "OPTIONS")
-						a.DataType = SwMapsAttributeType.Options;
-					else if (dataType == "PHOTO")
-						a.DataType = SwMapsAttributeType.Photo;
-					else if (dataType == "AUDIO")
-						a.DataType = SwMapsAttributeType.Audio;
-					else if (dataType == "VIDEO")
-						a.DataType = SwMapsAttributeType.Video;
+					a.DataType = SwMapsTypes.AttributeTypeFromString(dataType);
+
 					ret.Add(a);
 				}
 
@@ -188,24 +157,12 @@ namespace SwMapsLib.IO
 					layer.UUID = reader.ReadString("uuid");
 					layer.Name = reader.ReadString("name");
 					layer.GroupName = reader.ReadString("group_name");
-					var geomType = reader.ReadString("geom_type").ToUpper();
 
-					if (geomType == "POINT")
-						layer.GeometryType = SwMapsGeometryType.Point;
-					if (geomType == "LINE")
-						layer.GeometryType = SwMapsGeometryType.Line;
-					if (geomType == "POLYGON")
-						layer.GeometryType = SwMapsGeometryType.Polygon;
+					var geomType = reader.ReadString("geom_type").ToUpper();
+					layer.GeometryType = SwMapsTypes.GeometryTypeFromString(geomType);
 
 					var pointSymbol = reader.ReadString("point_symbol").ToUpper();
-					if (pointSymbol == "CIRCLE")
-						layer.PointShape = SwMapsPointShape.Circle;
-					else if (pointSymbol == "CIRCLE_FILL")
-						layer.PointShape = SwMapsPointShape.FilledCircle;
-					else if (pointSymbol == "TRIANGLE")
-						layer.PointShape = SwMapsPointShape.Triangle;
-					else if (pointSymbol == "SQUARE")
-						layer.PointShape = SwMapsPointShape.Square;
+					layer.PointShape = SwMapsTypes.PointShapeFromString(pointSymbol);
 
 					layer.Color = reader.ReadInt32("color");
 					layer.FillColor = reader.ReadInt32("fill_color");

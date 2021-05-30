@@ -31,6 +31,8 @@ namespace SwMapsLib.IO
 		public void WriteSwmapsDb(string path)
 		{
 			if (File.Exists(path)) File.Delete(path);
+			
+			Project.ResequenceAll();
 
 			conn = new SQLiteConnection($"Data Source={path};Version=3;");
 			conn.Open();
@@ -155,7 +157,7 @@ namespace SwMapsLib.IO
 				var cv = new Dictionary<string, object>();
 				cv["attr"] = attr.Name;
 				cv["value"] = attr.Value;
-				cv["data_type"] = attr.DataType;
+				cv["data_type"] =SwMapsTypes.ProjectAttributeTypeToString( attr.DataType);
 				cv["field_choices"] = string.Join("||", attr.Choices);
 				cv["required_field"] = attr.IsRequired ? 1 : 0;
 				cv["field_length"] = attr.FieldLength;
@@ -172,7 +174,7 @@ namespace SwMapsLib.IO
 				cv["uuid"] = lyr.UUID;
 				cv["name"] = lyr.Name;
 				cv["group_name"] = lyr.GroupName;
-				cv["geom_type"] = GeometryTypeToString(lyr.GeometryType);
+				cv["geom_type"] = SwMapsTypes.GeometryTypeToString(lyr.GeometryType);
 				cv["point_symbol"] = lyr.PointShape;
 				cv["color"] = lyr.Color;
 				cv["fill_color"] = lyr.FillColor;
@@ -196,7 +198,7 @@ namespace SwMapsLib.IO
 					cv["uuid"] = attr.UUID;
 					cv["layer_id"] = attr.LayerID;
 					cv["field_name"] = attr.FieldName;
-					cv["data_type"] = AttributeTypeToString(attr.DataType);
+					cv["data_type"] = SwMapsTypes.AttributeTypeToString(attr.DataType);
 					cv["field_choices"] = string.Join("||", attr.Choices);
 
 					conn.Insert("attribute_fields", cv, sqlTrans);
@@ -250,7 +252,7 @@ namespace SwMapsLib.IO
 					var cv = new Dictionary<string, object>();
 					cv["item_id"] = attr.FeatureID;
 					cv["field_id"] = attr.FieldID;
-					cv["data_type"] = AttributeTypeToString(attr.DataType);
+					cv["data_type"] = SwMapsTypes.AttributeTypeToString(attr.DataType);
 					cv["value"] = attr.Value;
 					conn.Insert("attribute_values", cv, sqlTrans);
 				}
@@ -287,7 +289,6 @@ namespace SwMapsLib.IO
 				cv1["additional_data"] = pt.AdditionalData;
 
 				conn.Insert("points", cv1, sqlTrans);
-
 			}
 		}
 
@@ -325,34 +326,7 @@ namespace SwMapsLib.IO
 				}
 			}
 		}
-
-
-		static string PointShapeToString(SwMapsPointShape pt)
-		{
-			if (pt == SwMapsPointShape.Circle) return "CIRCLE";
-			if (pt == SwMapsPointShape.Triangle) return "TRIANGLE";
-			if (pt == SwMapsPointShape.Square) return "SQUARE";
-			if (pt == SwMapsPointShape.FilledCircle) return "CIRCLE_FILL";
-			return "CIRCLE";
-		}
-
-		static string AttributeTypeToString(SwMapsAttributeType a)
-		{
-			if (a == SwMapsAttributeType.Text) return "TEXT";
-			if (a == SwMapsAttributeType.Numeric) return "NUMERIC";
-			if (a == SwMapsAttributeType.Options) return "OPTIONS";
-			if (a == SwMapsAttributeType.Photo) return "PHOTO";
-			if (a == SwMapsAttributeType.Audio) return "AUDIO";
-			if (a == SwMapsAttributeType.Video) return "VIDEO";
-			return "TEXT";
-		}
-
-		static string GeometryTypeToString(SwMapsGeometryType gt)
-		{
-			if (gt == SwMapsGeometryType.Point) return "POINT";
-			if (gt == SwMapsGeometryType.Line) return "LINE";
-			if (gt == SwMapsGeometryType.Polygon) return "POLYGON";
-			return "POINT";
-		}
+		
+		
 	}
 }

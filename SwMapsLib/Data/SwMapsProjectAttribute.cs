@@ -10,9 +10,9 @@ namespace SwMapsLib.Data
 	{
 		public string Name { get; set; }
 		public string Value { get; set; }
-		public SwMapsProjectAttributeType DataType { get; set; }
+		public SwMapsProjectAttributeType DataType { get; set; } = SwMapsProjectAttributeType.Text;
 		public List<string> Choices { get; set; } = new List<string>();
-		public bool IsRequired { get; set; }
-		public int FieldLength { get; set; }
+		public bool IsRequired { get; set; } = false;
+		public int FieldLength { get; set; } = 0;
 	}
 }

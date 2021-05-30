@@ -10,6 +10,13 @@ using System.IO;
 
 namespace SwMapsLib.IO
 {
+	/// <summary>
+	/// Writes a SW Maps V1 Database (swmaps) File
+	/// 
+	/// Avinab Malla
+	/// avinabmalla@yahoo.com
+	/// 28 May 2021
+	/// </summary>
 	public class SwMapsV1Writer
 	{
 		SwMapsProject Project;
@@ -26,6 +33,8 @@ namespace SwMapsLib.IO
 		public void WriteSwmapsDb(string path)
 		{
 			if (File.Exists(path)) File.Delete(path);
+
+			Project.ResequenceAll();
 
 			conn = new SQLiteConnection($"Data Source={path};Version=3;");
 			conn.Open();
