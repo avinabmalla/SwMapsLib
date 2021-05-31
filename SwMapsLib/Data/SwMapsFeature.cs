@@ -9,7 +9,7 @@ namespace SwMapsLib.Data
 	public class SwMapsFeature
 	{
 		public int FeatureID { get; set; }
-		public string UUID { get; set; }
+		public string UUID { get; set; } = Guid.NewGuid().ToString();
 		public string Name { get; set; }
 		public string Remarks { get; set; }
 		public string LayerID { get; set; }
@@ -18,7 +18,6 @@ namespace SwMapsLib.Data
 		public List<SwMapsPoint> Points { get; set; }
 
 		public List<SwMapsAttributeValue> AttributeValues;
-
 
 		public SwMapsAttributeValue GetAttributeByFieldname(string fieldName)
 		{

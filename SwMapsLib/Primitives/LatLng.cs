@@ -11,10 +11,12 @@ namespace SwMapsLib.Primitives
 		public double Latitude { get; set; }
 		public double Longitude { get; set; }
 
-		public LatLng(double lat, double lon)
+		public double Elevation { get; set; }
+		public LatLng(double lat, double lon, double elv= 0)
 		{
 			Latitude = lat;
 			Longitude = lon;
+			Elevation = elv;
 		}
 	}
 }

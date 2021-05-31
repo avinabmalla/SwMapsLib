@@ -8,11 +8,11 @@ namespace SwMapsLib.Data
 {
 	public class SwMapsAttributeField
 	{
-		public string UUID { get; set; }
+		public string UUID { get; set; } = Guid.NewGuid().ToString();
 		public string LayerID { get; set; }
 		public string FieldName { get; set; }
 		public SwMapsAttributeType DataType { get; set; }
-		public List<string> Choices { get; set; }
+		public List<string> Choices { get; set; } = new List<string>();
 	}
 
 	

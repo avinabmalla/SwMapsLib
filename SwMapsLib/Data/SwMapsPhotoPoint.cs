@@ -8,7 +8,7 @@ namespace SwMapsLib.Data
 {
 	public class SwMapsPhotoPoint
 	{
-		public string ID { get; set; }
+		public string ID { get; set; } = Guid.NewGuid().ToString();
 		public string Remarks { get; set; }
 		public string FileName { get; set; }
 		public SwMapsPoint Location { get; set; }
