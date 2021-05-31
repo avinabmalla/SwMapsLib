@@ -55,6 +55,10 @@ namespace SwMapsLib.IO
 
 			sqlTrans.Commit();
 			conn.Close();
+
+			//https://stackoverflow.com/questions/8511901/system-data-sqlite-close-not-releasing-database-file
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
 		}
 
 

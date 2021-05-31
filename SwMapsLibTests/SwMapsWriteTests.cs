@@ -9,7 +9,7 @@ using SwMapsLib.IO;
 namespace SwMapsLibTests
 {
 	[TestClass]
-	class SwMapsWriteTests
+	public class SwMapsWriteTests
 	{
 		[TestMethod]
 		public void WriteSwMapsV1()
@@ -37,6 +37,19 @@ namespace SwMapsLibTests
 			var writer = new SwMapsV2Writer(project);
 			writer.WriteSwmapsDb(outPath);
 
+		}
+
+		[TestMethod]
+		public void WriteSwmz()
+		{
+			var path = @"Data\30101001_con.swmaps";
+			var reader = new SwMapsV1Reader(path);
+			var project = reader.Read();
+
+			var outPath = @"Data\SwmzTest.swmz";
+			System.IO.File.Delete(outPath);
+			var writer = new SwmzWriter(project,2);
+			writer.Write(outPath);
 		}
 	}
 }

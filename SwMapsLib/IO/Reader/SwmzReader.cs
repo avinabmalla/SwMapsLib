@@ -21,7 +21,13 @@ namespace SwMapsLib.IO
 
 		public SwMapsProject Read(bool readMediaFiles = false)
 		{
-			ISwMapsDbReader reader = IsV1Project ? new SwMapsV1Reader(DbPath) : new SwMapsV2Reader(DbPath);
+			ISwMapsDbReader reader;
+			
+			if (IsV1Project)
+				reader = new SwMapsV1Reader(DbPath);
+			else
+				reader = new SwMapsV2Reader(DbPath);
+
 			SwMapsProject project = reader.Read();
 			if (readMediaFiles)
 			{

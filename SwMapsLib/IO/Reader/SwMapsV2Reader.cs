@@ -53,24 +53,30 @@ namespace SwMapsLib.IO
 		{
 			var ret = new List<SwMapsProjectAttribute>();
 			var sql = "SELECT * FROM project_attributes";
-			using var cmd = new SQLiteCommand(sql, conn);
-			using var reader = cmd.ExecuteReader();
-			while (reader.Read())
+			
+			using (var cmd = new SQLiteCommand(sql, conn))
 			{
-				var a = new SwMapsProjectAttribute();
-				a.Name = reader.ReadString("attr");
-				a.Value = reader.ReadString("value");
+				using (var reader = cmd.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						var a = new SwMapsProjectAttribute();
+						a.Name = reader.ReadString("attr");
+						a.Value = reader.ReadString("value");
 
-				a.IsRequired = reader.ReadInt32("required_field") == 1;
+						a.IsRequired = reader.ReadInt32("required_field") == 1;
 
-				var dataType = reader.ReadString("data_type").ToUpper();
-				a.DataType = SwMapsTypes.ProjectAttributeTypeFromString(dataType);
+						var dataType = reader.ReadString("data_type").ToUpper();
+						a.DataType = SwMapsTypes.ProjectAttributeTypeFromString(dataType);
 
-				var choices = reader.ReadString("field_choices");
-				a.Choices = choices.Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+						var choices = reader.ReadString("field_choices");
+						a.Choices = choices.Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-				ret.Add(a);
+						ret.Add(a);
+					}
+				}
 			}
+
 			return ret;
 		}
 

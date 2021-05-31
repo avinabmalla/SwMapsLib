@@ -14,11 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SwMapsLib\SwMapsLib.csproj" />
+    <Folder Include="Data\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <ProjectReference Include="..\SwMapsLib\SwMapsLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
