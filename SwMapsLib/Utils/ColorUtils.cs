@@ -18,11 +18,12 @@ namespace SwMapsLib.Utils
 
 		public static int GetColorInt(Color color)
 		{
-			int a = color.A;
-			int r = color.R;
-			int g = color.G;
-			int b = color.B;
-			return ((a << 24) | 0xFF) + ((r << 16) | 0xFF) + ((g << 8) | 0xFF) + (b | 0xFF);
+			byte A = color.A;
+			byte R = color.R;
+			byte G = color.G;
+			byte B = color.B;
+
+			return  (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff);
 		}
 	}
 }
