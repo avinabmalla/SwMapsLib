@@ -2,10 +2,25 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Avinab Malla</Authors>
+    <Company>Softwel</Company>
+    <Description>A library for reading and writing SW Maps project files</Description>
+    <PackageIcon>playstore.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl></RepositoryUrl>
+    <PackageTags>SW Maps</PackageTags>
+    <PackageProjectUrl>https://github.com/avinabmalla/SwMapsLib</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Icons\SW Maps\New Icon\playstore.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
