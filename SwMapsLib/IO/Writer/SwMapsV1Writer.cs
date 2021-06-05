@@ -19,6 +19,7 @@ namespace SwMapsLib.IO
 	/// </summary>
 	public class SwMapsV1Writer
 	{
+		public const int Version = 20;
 		SwMapsProject Project;
 
 		SQLiteConnection conn;
@@ -39,6 +40,9 @@ namespace SwMapsLib.IO
 
 			conn = new SQLiteConnection($"Data Source={path};Version=3;");
 			conn.Open();
+			conn.ExecuteSQL(String.Format("pragma user_version = {0};", Version));
+
+
 			sqlTrans = conn.BeginTransaction();
 
 			CreateTables();
