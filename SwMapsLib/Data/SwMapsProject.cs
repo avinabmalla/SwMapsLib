@@ -43,12 +43,20 @@ namespace SwMapsLib.Data
 		{
 			foreach (var f in Features)
 			{
-				for (int i = 0; i < f.Points.Count; i++) f.Points[i].Seq = i;
+				for (int i = 0; i < f.Points.Count; i++)
+				{
+					f.Points[i].Seq = i;
+					f.Points[i].FeatureID = f.UUID;
+				}
 			}
 
 			foreach (var t in Tracks)
 			{
-				for (int i = 0; i < t.Vertices.Count; i++) t.Vertices[i].Seq = i;
+				for (int i = 0; i < t.Vertices.Count; i++)
+				{
+					t.Vertices[i].Seq = i;
+					t.Vertices[i].FeatureID = t.UUID;
+				}
 			}
 
 			foreach (var t in PhotoPoints)
@@ -56,7 +64,6 @@ namespace SwMapsLib.Data
 				t.Location.Seq = 0;
 			}
 		}
-
 
 		public List<string> GetAllMediaFiles()
 		{

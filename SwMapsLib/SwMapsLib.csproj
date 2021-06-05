@@ -7,9 +7,13 @@
     <Description>A library for reading and writing SW Maps project files</Description>
     <PackageIcon>playstore.png</PackageIcon>
     <PackageIconUrl />
-    <RepositoryUrl></RepositoryUrl>
-    <PackageTags>SW Maps</PackageTags>
+    <RepositoryUrl>https://github.com/avinabmalla/SwMapsLib</RepositoryUrl>
+    <PackageTags>SW Maps, swmz, swm2</PackageTags>
     <PackageProjectUrl>https://github.com/avinabmalla/SwMapsLib</PackageProjectUrl>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <Copyright>Copyright © Avinab Malla, 2021</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +22,10 @@
 
   <ItemGroup>
     <None Include="..\..\..\..\Icons\SW Maps\New Icon\playstore.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
