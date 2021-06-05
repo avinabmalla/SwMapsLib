@@ -23,6 +23,7 @@ namespace SwMapsLib.IO
 		SQLiteConnection conn;
 		SQLiteTransaction sqlTrans;
 
+		public event EventHandler<SQLiteConnection> OnDbWrite;
 		public SwMapsV2Writer(SwMapsProject project)
 		{
 			Project = project;
@@ -39,7 +40,6 @@ namespace SwMapsLib.IO
 			sqlTrans = conn.BeginTransaction();
 
 			CreateTables();
-
 			WriteProjectAttributes();
 
 			WriteFeatureLayers();
@@ -52,6 +52,8 @@ namespace SwMapsLib.IO
 			WriteTracks();
 
 			sqlTrans.Commit();
+
+			OnDbWrite?.Invoke(this, conn);
 			conn.Close();
 
 			//https://stackoverflow.com/questions/8511901/system-data-sqlite-close-not-releasing-database-file
