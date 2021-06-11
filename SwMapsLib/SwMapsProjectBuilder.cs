@@ -15,8 +15,22 @@ namespace SwMapsLib
 
 		public SwMapsProjectBuilder()
 		{
+			Project = new SwMapsProject();
 		}
 
+		public SwMapsProjectAttribute AddProjectAttribute(string name, SwMapsProjectAttributeType dataType, string value = "", bool required = false,int fieldLength = 0, IEnumerable<string> options = null)
+		{
+			var ret = new SwMapsProjectAttribute();
+			ret.Name = name;
+			ret.Value = value;
+			ret.DataType = dataType;
+			if(options!=null) ret.Choices = options.ToList();
+			ret.IsRequired = required;
+			ret.FieldLength = fieldLength;
+
+			Project.ProjectAttributes.Add(ret);
+			return ret;
+		}
 
 		SwMapsFeatureLayer GetLayer(string layerName)
 		{
@@ -51,7 +65,7 @@ namespace SwMapsLib
 			return lyr;
 		}
 
-		public void AddAttributeField(string layerName, string attrName, SwMapsAttributeType attrType, List<string> choices = null)
+		public void AddAttributeField(string layerName, string attrName, SwMapsAttributeType attrType, IEnumerable<string> choices = null)
 		{
 			SwMapsFeatureLayer layer = GetLayer(layerName);
 
@@ -63,7 +77,7 @@ namespace SwMapsLib
 			attr.FieldName = attrName;
 			attr.DataType = attrType;
 
-			attr.Choices.AddRange(choices);
+			if (choices != null) attr.Choices.AddRange(choices);
 
 			layer.AttributeFields.Add(attr);
 		}
@@ -95,6 +109,8 @@ namespace SwMapsLib
 			pt.Time = TimeHelper.DateTimeToJavaTimeStamp(time1);
 			pt.StartTime = TimeHelper.DateTimeToJavaTimeStamp(time1);
 			f.Points.Add(pt);
+
+			Project.Features.Add(f);
 
 			return f;
 		}

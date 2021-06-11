@@ -15,9 +15,9 @@ namespace SwMapsLib.Data
 		public string LayerID { get; set; }
 		public SwMapsGeometryType GeometryType { get; set; }
 
-		public List<SwMapsPoint> Points { get; set; }
+		public List<SwMapsPoint> Points { get; set; } = new List<SwMapsPoint>();
 
-		public List<SwMapsAttributeValue> AttributeValues;
+		public List<SwMapsAttributeValue> AttributeValues { get; set; } = new List<SwMapsAttributeValue>();
 
 		public SwMapsAttributeValue GetAttributeByFieldname(string fieldName)
 		{

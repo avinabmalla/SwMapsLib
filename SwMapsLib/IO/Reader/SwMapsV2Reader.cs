@@ -30,7 +30,7 @@ namespace SwMapsLib.IO
 			mediaPath = Path.Combine(mediaPath, "Photos");
 
 			var project = new SwMapsProject(Swm2Path, mediaPath);
-
+			project.ProjectInfo = ReadProjectInfo();
 			project.FeatureLayers = ReadAllFeatureLayers();
 			project.Features = ReadAllFeatures();
 			project.Tracks = ReadAllTracks();
@@ -47,6 +47,23 @@ namespace SwMapsLib.IO
 			}
 			conn.Close();
 			return project;
+		}
+
+		private Dictionary<string, string> ReadProjectInfo()
+		{
+			var ret = new Dictionary<string, string>();
+			var sql = $"SELECT * FROM project_info;";
+
+			using (var cmd = new SQLiteCommand(sql, conn))
+			using (var reader = cmd.ExecuteReader())
+				while (reader.Read())
+				{
+					var key = reader.ReadString("attr");
+					var value = reader.ReadString("value");
+					ret[key] = value;
+				}
+
+			return ret;
 		}
 
 		public List<SwMapsProjectAttribute> ReadProjectAttributes()

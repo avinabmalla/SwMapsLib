@@ -9,6 +9,7 @@ namespace SwMapsLib.Data
 {
 	public class SwMapsProject
 	{
+		public Dictionary<string, string> ProjectInfo = new Dictionary<string, string>();
 		public List<SwMapsFeatureLayer> FeatureLayers = new List<SwMapsFeatureLayer>();
 		public List<SwMapsFeature> Features = new List<SwMapsFeature>();
 		public List<SwMapsTrack> Tracks = new List<SwMapsTrack>();
@@ -34,6 +35,10 @@ namespace SwMapsLib.Data
 		{
 			DatabasePath = dbpath;
 			MediaFolderPath = mediaPath;
+		}
+		public SwMapsProject()
+		{
+
 		}
 
 		/// <summary>

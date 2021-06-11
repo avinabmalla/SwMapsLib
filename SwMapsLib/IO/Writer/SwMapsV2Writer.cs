@@ -43,6 +43,7 @@ namespace SwMapsLib.IO
 			sqlTrans = conn.BeginTransaction();
 
 			CreateTables();
+			WriteProjectInfo();
 			WriteProjectAttributes();
 
 			WriteFeatureLayers();
@@ -157,6 +158,17 @@ namespace SwMapsLib.IO
 				"name TEXT," +
 				"color TEXT," +
 				"description TEXT);", sqlTrans);
+		}
+
+		void WriteProjectInfo()
+		{
+			foreach (var key in Project.ProjectInfo.Keys)
+			{
+				var cv = new Dictionary<string, object>();
+				cv["attr"] = key;
+				cv["value"] = Project.ProjectInfo[key];
+				conn.Insert("project_info", cv, sqlTrans);
+			}
 		}
 
 		void WriteProjectAttributes()

@@ -109,20 +109,19 @@ namespace SwMapsLib.Utils
 
 		public static bool ExecuteSQL(this SQLiteConnection conn, string sql, SQLiteTransaction sqlTrans = null)
 		{
-			SQLiteCommand cmd;
-			if (sqlTrans != null)
-				cmd = new SQLiteCommand(sql, conn, sqlTrans);
-			else
-				cmd = new SQLiteCommand(sql, conn);
-			
-			try
+			using (var cmd = new SQLiteCommand(sql, conn))
 			{
-				cmd.ExecuteNonQuery();
-				return true;
-			}
-			catch
-			{
-				return false;
+				if (sqlTrans != null)
+					cmd.Transaction = sqlTrans;
+				try
+				{
+					cmd.ExecuteNonQuery();
+					return true;
+				}
+				catch
+				{
+					return false;
+				}
 			}
 		}
 
@@ -146,20 +145,20 @@ namespace SwMapsLib.Utils
 			}
 			var sql = $"INSERT INTO {tableName}({String.Join(",", fields)}) VALUES({String.Join(",", values)})";
 
-			SQLiteCommand cmd;
-			if (sqlTrans != null)
-				cmd = new SQLiteCommand(sql, conn, sqlTrans);
-			else
-				cmd = new SQLiteCommand(sql, conn);
 
-			foreach (var f in contentValues.Keys)
+			using (var cmd = new SQLiteCommand(sql, conn))
 			{
-				cmd.Parameters.AddWithValue(f, contentValues[f]);
+				if (sqlTrans != null)
+					cmd.Transaction = sqlTrans;
+
+				foreach (var f in contentValues.Keys)
+				{
+					cmd.Parameters.AddWithValue(f, contentValues[f]);
+				}
+
+				cmd.ExecuteNonQuery();
+				return conn.GetLastInsertedRowID();
 			}
-
-			cmd.ExecuteNonQuery();
-			return conn.GetLastInsertedRowID();
-
 		}
 
 	}

@@ -22,8 +22,6 @@ namespace SwMapsLib.IO
 		public const int Version = 20;
 		SwMapsProject Project;
 
-		SQLiteConnection conn;
-		SQLiteTransaction sqlTrans;
 
 		public event EventHandler<SQLiteConnection> OnDbWrite;
 
@@ -38,38 +36,43 @@ namespace SwMapsLib.IO
 
 			Project.ResequenceAll();
 
-			conn = new SQLiteConnection($"Data Source={path};Version=3;");
-			conn.Open();
-			conn.ExecuteSQL(String.Format("pragma user_version = {0};", Version));
+			using (var conn = new SQLiteConnection($"Data Source={path};Version=3;"))
+			{
+				conn.Open();
+				conn.ExecuteSQL(String.Format("pragma user_version = {0};", Version));
 
 
-			sqlTrans = conn.BeginTransaction();
+				using (var sqlTrans = conn.BeginTransaction())
+				{
 
-			CreateTables();
+					CreateTables(conn,sqlTrans);
+					WriteProjectInfo(conn, sqlTrans);
+					WriteProjectAttributes(conn, sqlTrans);
 
-			WriteProjectAttributes();
+					WriteFeatureLayers(conn, sqlTrans);
+					WriteAttributeFields(conn, sqlTrans);
 
-			WriteFeatureLayers();
-			WriteAttributeFields();
+					WriteFeatures(conn, sqlTrans);
+					WriteFeatureAttributes(conn, sqlTrans);
 
-			WriteFeatures();
-			WriteFeatureAttributes();
+					WritePhotos(conn, sqlTrans);
+					WriteTracks(conn, sqlTrans);
 
-			WritePhotos();
-			WriteTracks();
+					sqlTrans.Commit();
+				}
+				OnDbWrite?.Invoke(this, conn);
+				conn.Close();
 
-			sqlTrans.Commit();
-
-			OnDbWrite?.Invoke(this, conn);
-			conn.Close();
+			}
 
 			//https://stackoverflow.com/questions/8511901/system-data-sqlite-close-not-releasing-database-file
 			GC.Collect();
 			GC.WaitForPendingFinalizers();
 		}
 
+		
 
-		void CreateTables()
+		void CreateTables(SQLiteConnection conn, SQLiteTransaction sqlTrans)
 		{
 			conn.ExecuteSQL("CREATE TABLE tracks (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, color INTEGER, description TEXT);", sqlTrans);
 			conn.ExecuteSQL("CREATE TABLE track_points (line_id INTEGER, seq INTEGER, lat NUMBER, lon NUMBER, elv NUMBER, time NUMBER);", sqlTrans);
@@ -156,7 +159,17 @@ namespace SwMapsLib.IO
 			conn.ExecuteSQL("CREATE TABLE android_metadata (locale TEXT);", sqlTrans);
 		}
 
-		void WriteProjectAttributes()
+		void WriteProjectInfo(SQLiteConnection conn, SQLiteTransaction sqlTrans)
+		{
+			foreach(var key in Project.ProjectInfo.Keys)
+			{
+				var cv = new Dictionary<string, object>();
+				cv["attr"] = key;
+				cv["value"] = Project.ProjectInfo[key];
+				conn.Insert("project_info", cv, sqlTrans);
+			}
+		}
+		void WriteProjectAttributes(SQLiteConnection conn, SQLiteTransaction sqlTrans)
 		{
 			foreach (var attr in Project.ProjectAttributes)
 			{
@@ -167,7 +180,7 @@ namespace SwMapsLib.IO
 			}
 		}
 
-		void WriteFeatureLayers()
+		void WriteFeatureLayers(SQLiteConnection conn, SQLiteTransaction sqlTrans)
 		{
 			foreach (var lyr in Project.FeatureLayers)
 			{
@@ -188,7 +201,7 @@ namespace SwMapsLib.IO
 			}
 		}
 
-		void WriteAttributeFields()
+		void WriteAttributeFields(SQLiteConnection conn, SQLiteTransaction sqlTrans)
 		{
 			foreach (var l in Project.FeatureLayers)
 			{
@@ -205,7 +218,7 @@ namespace SwMapsLib.IO
 			}
 		}
 
-		void WriteFeatures()
+		void WriteFeatures(SQLiteConnection conn, SQLiteTransaction sqlTrans)
 		{
 			foreach (var f in Project.Features)
 			{
@@ -249,7 +262,7 @@ namespace SwMapsLib.IO
 			}
 		}
 
-		void WriteFeatureAttributes()
+		void WriteFeatureAttributes(SQLiteConnection conn, SQLiteTransaction sqlTrans)
 		{
 			foreach (var f in Project.Features)
 			{
@@ -267,7 +280,7 @@ namespace SwMapsLib.IO
 			}
 		}
 
-		void WritePhotos()
+		void WritePhotos(SQLiteConnection conn, SQLiteTransaction sqlTrans)
 		{
 			foreach (var ph in Project.PhotoPoints)
 			{
@@ -281,7 +294,7 @@ namespace SwMapsLib.IO
 			}
 		}
 
-		void WriteTracks()
+		void WriteTracks(SQLiteConnection conn, SQLiteTransaction sqlTrans)
 		{
 			foreach (var track in Project.Tracks)
 			{

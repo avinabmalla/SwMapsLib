@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SwMapsLib.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,8 +17,8 @@ namespace SwMapsLib.Data
 		public int FillColor { get; set; } = 0;
 		public float LineWidth { get; set; } = 3;
 		public SwMapsPointShape PointShape { get; set; } = SwMapsPointShape.Circle;
-		public bool Drawn { get; set; }
-		public bool Active { get; set; }
+		public bool Drawn { get; set; } = false;
+		public bool Active { get; set; } = true;
 		public string LabelFieldID { get; set; }
 		public byte[] PngSymbol { get; set; }
 
@@ -30,5 +31,23 @@ namespace SwMapsLib.Data
 			return AttributeFields.FirstOrDefault(
 				a => a.FieldName.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
 		}
+
+		public SwMapsFeatureLayer()
+		{
+			var rnd = new Random();
+			var R = rnd.Next(0, 256);
+			var G = rnd.Next(0, 256);
+			var B = rnd.Next(0, 256);
+
+			SetColor(System.Drawing.Color.FromArgb(R, G, B));
+		}
+
+		public void SetColor(System.Drawing.Color color)
+		{
+			Color = ColorUtils.GetColorInt(color);
+			FillColor = ColorUtils.GetColorInt(System.Drawing.Color.FromArgb(80, color.R, color.G, color.B));
+		}
+
+
 	}
 }
