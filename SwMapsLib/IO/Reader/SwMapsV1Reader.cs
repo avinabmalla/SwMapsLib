@@ -13,7 +13,6 @@ namespace SwMapsLib.IO
 	public class SwMapsV1Reader : ISwMapsDbReader
 	{
 		public readonly string SwMapsPath;
-		SQLiteConnection conn;
 
 		public Dictionary<string, string> LayerIDs = new Dictionary<string, string>(); //name, uuid
 		public Dictionary<int, string> PointIDs = new Dictionary<int, string>();
@@ -27,23 +26,26 @@ namespace SwMapsLib.IO
 
 		public SwMapsProject Read()
 		{
-			conn = new SQLiteConnection($"Data Source={SwMapsPath};Version=3;");
-			conn.Open();
+			using (var conn = new SQLiteConnection($"Data Source={SwMapsPath};Version=3;"))
+			{
+				conn.Open();
 
-			var mediaPath = Directory.GetParent(Path.GetDirectoryName(SwMapsPath)).FullName;
-			mediaPath = Path.Combine(mediaPath, "Photos");
+				var mediaPath = Directory.GetParent(Path.GetDirectoryName(SwMapsPath)).FullName;
+				mediaPath = Path.Combine(mediaPath, "Photos");
 
-			var project = new SwMapsProject(SwMapsPath, mediaPath);
-			project.ProjectInfo = ReadProjectInfo();
-			project.ProjectAttributes = ReadAllProjectAttributes();
-			project.FeatureLayers = ReadAllFeatureLayers();
-			project.Features = ReadAllFeatures();
-			project.Tracks = ReadAllTracks();
-			project.PhotoPoints = ReadAllPhotoPoints();
-			conn.Close();
-			return project;
+				var project = new SwMapsProject(SwMapsPath, mediaPath);
+				project.ProjectInfo = ReadProjectInfo(conn);
+				project.ProjectAttributes = ReadAllProjectAttributes(conn);
+				project.FeatureLayers = ReadAllFeatureLayers(conn);
+				project.Features = ReadAllFeatures(conn);
+				project.Tracks = ReadAllTracks(conn);
+				project.PhotoPoints = ReadAllPhotoPoints(conn);
+				conn.Close();
+
+				return project;
+			}
 		}
-		private Dictionary<string, string> ReadProjectInfo()
+		private Dictionary<string, string> ReadProjectInfo(SQLiteConnection conn)
 		{
 			var ret = new Dictionary<string, string>();
 			var sql = $"SELECT * FROM project_info;";
@@ -59,7 +61,7 @@ namespace SwMapsLib.IO
 
 			return ret;
 		}
-		private List<SwMapsProjectAttribute> ReadAllProjectAttributes()
+		private List<SwMapsProjectAttribute> ReadAllProjectAttributes(SQLiteConnection conn)
 		{
 			var ret = new List<SwMapsProjectAttribute>();
 			var sql = $"SELECT * FROM project_attributes;";
@@ -82,7 +84,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		private List<SwMapsAttributeField> ReadAttributeFields(string layer)
+		private List<SwMapsAttributeField> ReadAttributeFields(SQLiteConnection conn, string layer)
 		{
 			var ret = new List<SwMapsAttributeField>();
 			var sql = $"SELECT * FROM attribute_fields WHERE item_layer='{layer}';";
@@ -108,7 +110,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		private List<SwMapsPoint> ReadPolylinePoints(int lineId)
+		private List<SwMapsPoint> ReadPolylinePoints(SQLiteConnection conn, int lineId)
 		{
 			var ret = new List<SwMapsPoint>();
 			using (var cmd = new SQLiteCommand($"SELECT * FROM polyline_points WHERE line_id='{lineId}';", conn))
@@ -129,7 +131,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		private List<SwMapsPoint> ReadTrackPoints(int lineId)
+		private List<SwMapsPoint> ReadTrackPoints(SQLiteConnection conn, int lineId)
 		{
 			var ret = new List<SwMapsPoint>();
 			using (var cmd = new SQLiteCommand($"SELECT * FROM track_points WHERE line_id='{lineId}';", conn))
@@ -150,7 +152,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		private List<SwMapsAttributeValue> ReadAllAttributeValues(string fid, int itemID, string itemLayer)
+		private List<SwMapsAttributeValue> ReadAllAttributeValues(SQLiteConnection conn, string fid, int itemID, string itemLayer)
 		{
 			var sql = $"SELECT * FROM attribute_data WHERE item_id='{itemID}' AND item_layer='{itemLayer}';";
 			var ret = new List<SwMapsAttributeValue>();
@@ -180,7 +182,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		private List<SwMapsPoint> ReadPolylinePoints(string fid, int lineId)
+		private List<SwMapsPoint> ReadPolylinePoints(SQLiteConnection conn, string fid, int lineId)
 		{
 			var ret = new List<SwMapsPoint>();
 
@@ -203,7 +205,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		private List<SwMapsFeature> ReadAllPointFeatures()
+		private List<SwMapsFeature> ReadAllPointFeatures(SQLiteConnection conn)
 		{
 			var ret = new List<SwMapsFeature>();
 			using (var cmd = new SQLiteCommand($"SELECT * FROM points;", conn))
@@ -241,13 +243,13 @@ namespace SwMapsLib.IO
 
 					PointIDs[f.FeatureID] = f.UUID;
 
-					f.AttributeValues = ReadAllAttributeValues(f.UUID, f.FeatureID, layerName);
+					f.AttributeValues = ReadAllAttributeValues(conn, f.UUID, f.FeatureID, layerName);
 					ret.Add(f);
 				}
 			return ret;
 		}
 
-		private List<SwMapsFeature> ReadAllLinePolygonFeatures()
+		private List<SwMapsFeature> ReadAllLinePolygonFeatures(SQLiteConnection conn)
 		{
 			var ret = new List<SwMapsFeature>();
 			using (var cmd = new SQLiteCommand($"SELECT * FROM polylines;", conn))
@@ -270,11 +272,11 @@ namespace SwMapsLib.IO
 					f.Remarks = reader.ReadString("description");
 					var closed = reader.ReadInt32("closed") != 0;
 					f.GeometryType = closed ? SwMapsGeometryType.Polygon : SwMapsGeometryType.Line;
-					f.Points = ReadPolylinePoints(f.UUID, f.FeatureID);
+					f.Points = ReadPolylinePoints(conn, f.UUID, f.FeatureID);
 
 					LinePolygonIDs[f.Name] = f.UUID;
 
-					f.AttributeValues = ReadAllAttributeValues(f.UUID, f.FeatureID, layerName);
+					f.AttributeValues = ReadAllAttributeValues(conn, f.UUID, f.FeatureID, layerName);
 					ret.Add(f);
 
 
@@ -282,15 +284,15 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		private List<SwMapsFeature> ReadAllFeatures()
+		private List<SwMapsFeature> ReadAllFeatures(SQLiteConnection conn)
 		{
 			var ret = new List<SwMapsFeature>();
-			ret.AddRange(ReadAllPointFeatures());
-			ret.AddRange(ReadAllLinePolygonFeatures());
+			ret.AddRange(ReadAllPointFeatures(conn));
+			ret.AddRange(ReadAllLinePolygonFeatures(conn));
 			return ret;
 		}
 
-		private List<SwMapsFeatureLayer> ReadAllFeatureLayers()
+		private List<SwMapsFeatureLayer> ReadAllFeatureLayers(SQLiteConnection conn)
 		{
 			var ret = new List<SwMapsFeatureLayer>();
 			using (var cmd = new SQLiteCommand("SELECT *,rowid FROM data_layers;", conn))
@@ -327,13 +329,13 @@ namespace SwMapsLib.IO
 					if (layer.LabelFieldID == "(NO LABEL)")
 						layer.LabelFieldID = "";
 
-					layer.AttributeFields = ReadAttributeFields(layer.Name);
+					layer.AttributeFields = ReadAttributeFields(conn, layer.Name);
 					ret.Add(layer);
 				}
 			return ret;
 		}
 
-		private List<SwMapsTrack> ReadAllTracks()
+		private List<SwMapsTrack> ReadAllTracks(SQLiteConnection conn)
 		{
 			List<SwMapsTrack> ret = new List<SwMapsTrack>();
 
@@ -352,12 +354,12 @@ namespace SwMapsLib.IO
 
 			foreach (var tr in ret)
 			{
-				tr.Vertices = ReadTrackPoints(Convert.ToInt32(tr.UUID));
+				tr.Vertices = ReadTrackPoints(conn, Convert.ToInt32(tr.UUID));
 			}
 			return ret;
 		}
 
-		private List<SwMapsPhotoPoint> ReadAllPhotoPoints()
+		private List<SwMapsPhotoPoint> ReadAllPhotoPoints(SQLiteConnection conn)
 		{
 			var ret = new List<SwMapsPhotoPoint>();
 			var sql = "SELECT * FROM photos";

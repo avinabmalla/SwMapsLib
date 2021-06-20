@@ -48,6 +48,10 @@ namespace SwMapsLib.Data
 			FillColor = ColorUtils.GetColorInt(System.Drawing.Color.FromArgb(80, color.R, color.G, color.B));
 		}
 
+		public override string ToString()
+		{
+			return Name;
+		}
 
 	}
 }

@@ -187,8 +187,8 @@ namespace SwMapsLib.IO
 				var cv = new Dictionary<string, object>();
 
 				cv["name"] = lyr.Name;
-				cv["data_type"] = GeometryTypeToString(lyr.GeometryType);
-				cv["point_shape"] = PointShapeToString(lyr.PointShape);
+				cv["data_type"] = SwMapsTypes.GeometryTypeToString(lyr.GeometryType);
+				cv["point_shape"] = SwMapsTypes.PointShapeToString(lyr.PointShape);
 				cv["point_color"] = lyr.Color;
 				cv["line_color"] = lyr.Color;
 				cv["polygon_color"] = lyr.FillColor;
@@ -210,7 +210,7 @@ namespace SwMapsLib.IO
 					var cv = new Dictionary<string, object>();
 					cv["item_layer"] = l.Name;
 					cv["field"] = attr.FieldName;
-					cv["data_type"] = AttributeTypeToString(attr.DataType);
+					cv["data_type"] = SwMapsTypes.AttributeTypeToString(attr.DataType);
 					cv["field_choices"] = string.Join("||", attr.Choices);
 
 					conn.Insert("attribute_fields", cv, sqlTrans);
@@ -272,7 +272,7 @@ namespace SwMapsLib.IO
 					var cv = new Dictionary<string, object>();
 					cv["item_id"] = f.FeatureID;
 					cv["field"] = attr.FieldName;
-					cv["data_type"] = AttributeTypeToString(attr.DataType);
+					cv["data_type"] = SwMapsTypes.AttributeTypeToString(attr.DataType);
 					cv["value"] = attr.Value;
 					cv["item_layer"] = layerName;
 					conn.Insert("attribute_data", cv, sqlTrans);
@@ -319,32 +319,5 @@ namespace SwMapsLib.IO
 			}
 		}
 
-		string PointShapeToString(SwMapsPointShape pt)
-		{
-			if (pt == SwMapsPointShape.Circle) return "CIRCLE";
-			if (pt == SwMapsPointShape.Triangle) return "TRIANGLE";
-			if (pt == SwMapsPointShape.Square) return "SQUARE";
-			if (pt == SwMapsPointShape.FilledCircle) return "CIRCLE_FILL";
-			return "CIRCLE";
-		}
-
-		string AttributeTypeToString(SwMapsAttributeType a)
-		{
-			if (a == SwMapsAttributeType.Text) return "TEXT";
-			if (a == SwMapsAttributeType.Numeric) return "NUMERIC";
-			if (a == SwMapsAttributeType.Options) return "OPTIONS";
-			if (a == SwMapsAttributeType.Photo) return "PHOTO";
-			if (a == SwMapsAttributeType.Audio) return "AUDIO";
-			if (a == SwMapsAttributeType.Video) return "VIDEO";
-			return "TEXT";
-		}
-
-		string GeometryTypeToString(SwMapsGeometryType gt)
-		{
-			if (gt == SwMapsGeometryType.Point) return "POINT";
-			if (gt == SwMapsGeometryType.Line) return "LINE";
-			if (gt == SwMapsGeometryType.Polygon) return "POLYGON";
-			return "POINT";
-		}
 	}
 }

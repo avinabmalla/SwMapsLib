@@ -115,7 +115,7 @@ namespace SwMapsLib
 			return f;
 		}
 
-		public SwMapsFeature AddLineFeature(string layerName, List<LatLng> points, DateTime? time = null)
+		public SwMapsFeature AddLineFeature(string layerName,string name, List<LatLng> points, DateTime? time = null)
 		{
 			DateTime time1 = time ?? DateTime.UtcNow;
 
@@ -128,6 +128,7 @@ namespace SwMapsLib
 				throw new Exception($"Layer {layerName} is not a line layer!");
 
 			var f = new SwMapsFeature();
+			f.Name = name;
 			f.LayerID = layer.UUID;
 			f.UUID = Guid.NewGuid().ToString();
 			f.GeometryType = SwMapsGeometryType.Line;
@@ -150,7 +151,7 @@ namespace SwMapsLib
 			return f;
 		}
 
-		public SwMapsFeature AddPolygonFeature(string layerName, List<LatLng> points, DateTime? time = null)
+		public SwMapsFeature AddPolygonFeature(string layerName, string name, List<LatLng> points, DateTime? time = null)
 		{
 			DateTime time1 = time ?? DateTime.UtcNow;
 
@@ -163,6 +164,7 @@ namespace SwMapsLib
 				throw new Exception($"Layer {layerName} is not a polygon layer!");
 
 			var f = new SwMapsFeature();
+			f.Name = name; 
 			f.LayerID = layer.UUID;
 			f.UUID = Guid.NewGuid().ToString();
 			f.GeometryType = SwMapsGeometryType.Polygon;

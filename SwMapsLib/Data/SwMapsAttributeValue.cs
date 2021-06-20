@@ -13,5 +13,10 @@ namespace SwMapsLib.Data
 		public string FieldName { get; set; }
 		public SwMapsAttributeType DataType { get; set; }
 		public string Value { get; set; }
+
+		public override string ToString()
+		{
+			return Value;
+		}
 	}
 }

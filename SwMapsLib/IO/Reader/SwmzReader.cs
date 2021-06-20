@@ -22,7 +22,7 @@ namespace SwMapsLib.IO
 		public SwMapsProject Read(bool readMediaFiles = false)
 		{
 			ISwMapsDbReader reader;
-			
+
 			if (IsV1Project)
 				reader = new SwMapsV1Reader(DbPath);
 			else
@@ -32,7 +32,7 @@ namespace SwMapsLib.IO
 			if (readMediaFiles)
 			{
 				var files = Directory.EnumerateFiles($"{ProjectTempDir}\\Photos\\");
-				foreach(var file in files)
+				foreach (var file in files)
 				{
 					var name = Path.GetFileName(file);
 					var data = File.ReadAllBytes(file);
@@ -45,6 +45,8 @@ namespace SwMapsLib.IO
 
 		public SwmzReader(string swmzPath)
 		{
+			SwmzPath = swmzPath;
+
 			ProjectTempDir = TempFolder + Path.GetFileNameWithoutExtension(swmzPath).Trim();
 			if (Directory.Exists(ProjectTempDir))
 				Directory.Delete(ProjectTempDir, true);

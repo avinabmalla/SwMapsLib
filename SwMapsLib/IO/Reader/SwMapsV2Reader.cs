@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SwMapsLib.IO
 {
@@ -14,7 +12,6 @@ namespace SwMapsLib.IO
 	{
 		public readonly string Swm2Path;
 
-		SQLiteConnection conn;
 
 		public SwMapsV2Reader(string swm2Path)
 		{
@@ -23,33 +20,35 @@ namespace SwMapsLib.IO
 
 		public SwMapsProject Read()
 		{
-			conn = new SQLiteConnection($"Data Source={Swm2Path};Version=3;");
-			conn.Open();
-
-			var mediaPath = Directory.GetParent(Path.GetDirectoryName(Swm2Path)).FullName;
-			mediaPath = Path.Combine(mediaPath, "Photos");
-
-			var project = new SwMapsProject(Swm2Path, mediaPath);
-			project.ProjectInfo = ReadProjectInfo();
-			project.FeatureLayers = ReadAllFeatureLayers();
-			project.Features = ReadAllFeatures();
-			project.Tracks = ReadAllTracks();
-			project.PhotoPoints = ReadAllPhotoPoints();
-			project.ProjectAttributes = ReadProjectAttributes();
-
-			foreach (var f in project.Features)
+			using (var conn = new SQLiteConnection($"Data Source={Swm2Path};Version=3;"))
 			{
-				var layer = project.GetLayer(f.LayerID);
-				foreach (var a in f.AttributeValues)
+				conn.Open();
+
+				var mediaPath = Directory.GetParent(Path.GetDirectoryName(Swm2Path)).FullName;
+				mediaPath = Path.Combine(mediaPath, "Photos");
+
+				var project = new SwMapsProject(Swm2Path, mediaPath);
+				project.ProjectInfo = ReadProjectInfo(conn);
+				project.FeatureLayers = ReadAllFeatureLayers(conn);
+				project.Features = ReadAllFeatures(conn);
+				project.Tracks = ReadAllTracks(conn);
+				project.PhotoPoints = ReadAllPhotoPoints(conn);
+				project.ProjectAttributes = ReadProjectAttributes(conn);
+
+				foreach (var f in project.Features)
 				{
-					a.FieldName = layer.AttributeFields.FirstOrDefault(e => e.UUID == a.FieldID)?.FieldName ?? "";
+					var layer = project.GetLayer(f.LayerID);
+					foreach (var a in f.AttributeValues)
+					{
+						a.FieldName = layer.AttributeFields.FirstOrDefault(e => e.UUID == a.FieldID)?.FieldName ?? "";
+					}
 				}
+				conn.Close();
+				return project;
 			}
-			conn.Close();
-			return project;
 		}
 
-		private Dictionary<string, string> ReadProjectInfo()
+		private Dictionary<string, string> ReadProjectInfo(SQLiteConnection conn)
 		{
 			var ret = new Dictionary<string, string>();
 			var sql = $"SELECT * FROM project_info;";
@@ -66,11 +65,11 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		public List<SwMapsProjectAttribute> ReadProjectAttributes()
+		public List<SwMapsProjectAttribute> ReadProjectAttributes(SQLiteConnection conn)
 		{
 			var ret = new List<SwMapsProjectAttribute>();
 			var sql = "SELECT * FROM project_attributes";
-			
+
 			using (var cmd = new SQLiteCommand(sql, conn))
 			{
 				using (var reader = cmd.ExecuteReader())
@@ -97,7 +96,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		public List<SwMapsAttributeField> ReadAttributeFields(string layerID)
+		public List<SwMapsAttributeField> ReadAttributeFields(SQLiteConnection conn, string layerID)
 		{
 			var ret = new List<SwMapsAttributeField>();
 			var sql = $"SELECT * FROM attribute_fields WHERE layer_id = '{layerID}';";
@@ -124,7 +123,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		public List<SwMapsAttributeValue> ReadAttributeValues(string fid)
+		public List<SwMapsAttributeValue> ReadAttributeValues(SQLiteConnection conn, string fid)
 		{
 			var ret = new List<SwMapsAttributeValue>();
 			var sql = $"SELECT * FROM attribute_values WHERE item_id='{fid}'";
@@ -146,7 +145,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		public List<SwMapsFeature> ReadAllFeatures()
+		public List<SwMapsFeature> ReadAllFeatures(SQLiteConnection conn)
 		{
 			var ret = new List<SwMapsFeature>();
 			var sql = "SELECT * FROM features";
@@ -159,8 +158,8 @@ namespace SwMapsLib.IO
 					feature.LayerID = reader.ReadString("layer_id");
 					feature.Name = reader.ReadString("name");
 					feature.Remarks = reader.ReadString("remarks");
-					feature.Points = ReadPoints(feature.UUID);
-					feature.AttributeValues = ReadAttributeValues(feature.UUID);
+					feature.Points = ReadPoints(conn, feature.UUID);
+					feature.AttributeValues = ReadAttributeValues(conn, feature.UUID);
 
 
 					ret.Add(feature);
@@ -168,7 +167,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		public List<SwMapsFeatureLayer> ReadAllFeatureLayers()
+		public List<SwMapsFeatureLayer> ReadAllFeatureLayers(SQLiteConnection conn)
 		{
 			var ret = new List<SwMapsFeatureLayer>();
 			var sql = "SELECT * FROM feature_layers;";
@@ -194,13 +193,13 @@ namespace SwMapsLib.IO
 					layer.Active = reader.ReadInt32("active") == 1;
 					layer.Drawn = reader.ReadInt32("drawn") == 1;
 					layer.PngSymbol = reader.ReadBlob("png_symbol");
-					layer.AttributeFields = ReadAttributeFields(layer.UUID);
+					layer.AttributeFields = ReadAttributeFields(conn, layer.UUID);
 					ret.Add(layer);
 				}
 			return ret;
 		}
 
-		public List<SwMapsPoint> ReadPoints(string fid)
+		public List<SwMapsPoint> ReadPoints(SQLiteConnection conn, string fid)
 		{
 			var ret = new List<SwMapsPoint>();
 			var sql = $"SELECT * FROM points WHERE fid='{fid}' ORDER BY seq";
@@ -218,7 +217,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		public List<SwMapsTrack> ReadAllTracks()
+		public List<SwMapsTrack> ReadAllTracks(SQLiteConnection conn)
 		{
 			List<SwMapsTrack> ret = new List<SwMapsTrack>();
 
@@ -237,12 +236,12 @@ namespace SwMapsLib.IO
 
 			foreach (var tr in ret)
 			{
-				tr.Vertices = ReadPoints(tr.UUID);
+				tr.Vertices = ReadPoints(conn, tr.UUID);
 			}
 			return ret;
 		}
 
-		public List<SwMapsPhotoPoint> ReadAllPhotoPoints()
+		public List<SwMapsPhotoPoint> ReadAllPhotoPoints(SQLiteConnection conn)
 		{
 			var ret = new List<SwMapsPhotoPoint>();
 			var sql = "SELECT * FROM photos";
@@ -254,7 +253,7 @@ namespace SwMapsLib.IO
 					ph.ID = reader.ReadString("uuid");
 					ph.Remarks = reader.ReadString("remarks");
 					ph.FileName = reader.ReadString("photo_path");
-					ph.Location = ReadPoints(ph.ID).FirstOrDefault();
+					ph.Location = ReadPoints(conn, ph.ID).FirstOrDefault();
 					ret.Add(ph);
 				}
 			return ret;

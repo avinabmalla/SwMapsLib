@@ -25,6 +25,9 @@
     <None Update="Data\30101001_con.swmaps">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Data\SW_WSP_V3_Rural_Template.swmt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

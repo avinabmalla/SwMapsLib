@@ -9,6 +9,13 @@ namespace SwMapsLib.Utils
 {
 	public static class SqliteDbHelper
 	{
+		public static object ExecuteScalar(this SQLiteConnection conn, string sql)
+		{
+			using (var cmd = new SQLiteCommand(sql, conn))
+			{
+				return cmd.ExecuteScalar();
+			}
+		}
 		public static string ReadString(this SQLiteDataReader reader, string colName)
 		{
 			try
