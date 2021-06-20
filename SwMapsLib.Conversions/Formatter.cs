@@ -13,7 +13,7 @@ namespace SwMapsLib.Conversions
 			Settings = settings;
 		}
 
-		public string GetTimeLabel(long time)
+		public static string GetTimeLabel(long time)
 		{
 			return TimeHelper.JavaTimeStampToDateTime(time).ToString("MM/dd/yyyy HH:mm:ss.SSS z");
 		}

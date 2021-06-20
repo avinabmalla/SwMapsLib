@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SwMapsLib.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ namespace SwMapsLib.Data
 
 		public List<SwMapsAttributeValue> AttributeValues { get; set; } = new List<SwMapsAttributeValue>();
 
+
 		public SwMapsAttributeValue GetAttributeByFieldname(string fieldName)
 		{
 			return AttributeValues.FirstOrDefault(iterator => iterator.FieldName == fieldName);
@@ -29,6 +31,34 @@ namespace SwMapsLib.Data
 		{
 			if (layer.LabelFieldID == "") return "";
 			return AttributeValues.FirstOrDefault(av => av.FieldID == layer.LabelFieldID)?.Value ?? "";
+		}
+
+		public double Length
+		{
+			get
+			{
+				if (GeometryType == SwMapsGeometryType.Point) return 0;
+				var pts = Points.Select(pt => pt.ToLatLng()).ToList();
+				double l = 0;
+				for (int i = 0; i < pts.Count; i++)
+				{
+					l += SphericalUtil.computeDistanceBetween(pts[i], pts[i + 1]);
+				}
+				if (GeometryType == SwMapsGeometryType.Polygon)
+				{
+					l += SphericalUtil.computeDistanceBetween(pts.Last(), pts.First());
+				}
+				return l;
+			}
+		}
+		public object Area
+		{
+			get
+			{
+				if (GeometryType != SwMapsGeometryType.Polygon) return 0;
+				var pts = Points.Select(pt => pt.ToLatLng()).ToList();
+				return SphericalUtil.computeArea(pts);
+			}
 		}
 	}
 }

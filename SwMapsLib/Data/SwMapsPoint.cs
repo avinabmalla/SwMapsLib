@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SwMapsLib.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,11 @@ namespace SwMapsLib.Data
 		public override string ToString()
 		{
 			return $"{Latitude:0.0000000}, {Longitude:0.0000000}";
+		}
+
+		public LatLng ToLatLng()
+		{
+			return new LatLng(Latitude, Longitude, Elevation);
 		}
 	}
 }
