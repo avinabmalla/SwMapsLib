@@ -5,6 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\map_photo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\map_photo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SwMapsLib\SwMapsLib.csproj" />
   </ItemGroup>
 
@@ -16,6 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="NetTopologySuite.IO.PostGis" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
 </Project>

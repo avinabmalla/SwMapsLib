@@ -23,6 +23,7 @@ namespace SwMapsLib.Data
 		public string SnapID { get; set; }
 		public string AdditionalData { get; set; }
 
+		
 
 		public override string ToString()
 		{

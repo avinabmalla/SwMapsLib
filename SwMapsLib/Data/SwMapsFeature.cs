@@ -23,5 +23,12 @@ namespace SwMapsLib.Data
 		{
 			return AttributeValues.FirstOrDefault(iterator => iterator.FieldName == fieldName);
 		}
+
+
+		public string GetLabel(SwMapsFeatureLayer layer)
+		{
+			if (layer.LabelFieldID == "") return "";
+			return AttributeValues.FirstOrDefault(av => av.FieldID == layer.LabelFieldID)?.Value ?? "";
+		}
 	}
 }

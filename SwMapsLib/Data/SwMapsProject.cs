@@ -31,6 +31,11 @@ namespace SwMapsLib.Data
 			return FeatureLayers.FirstOrDefault(iterator => iterator.UUID == id);
 		}
 
+		public List<SwMapsFeature> GetAllFeatures(SwMapsFeatureLayer layer)
+		{
+			return Features.Where(f => f.LayerID == layer.UUID).ToList();
+		}
+
 		public SwMapsProject(string dbpath, string mediaPath)
 		{
 			DatabasePath = dbpath;

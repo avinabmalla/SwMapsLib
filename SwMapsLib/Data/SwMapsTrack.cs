@@ -11,7 +11,7 @@ namespace SwMapsLib.Data
 	{
 		public string UUID { get; set; }
 		public string Name { get; set; }
-		public long Color { get; set; }
+		public int Color { get; set; }
 		public string Remarks { get; set; }
 		public List<SwMapsPoint> Vertices { get; set; } = new List<SwMapsPoint>();
 		public List<LatLng> PointsLL => Vertices.Select(it => new LatLng(it.Latitude, it.Longitude)).ToList();

@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SwMapsLib\SwMapsLib.csproj" />
+    <ProjectReference Include="..\SwMapsLib.Conversions\SwMapsLib.Conversions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +27,9 @@
     </None>
     <None Update="Data\SW_WSP_V3_Rural_Template.swmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\TestSwmz.swmz">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

@@ -25,5 +25,17 @@ namespace SwMapsLib.Utils
 
 			return  (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff);
 		}
+
+
+		public static string ToAbgrHex(int color)
+		{
+			var clr = GetColor(color);
+			var A = clr.A.ToString("X2");
+			var R = clr.R.ToString("X2");
+			var G = clr.G.ToString("X2");
+			var B = clr.B.ToString("X2");
+
+			return A + B + G + R;
+		}
 	}
 }
