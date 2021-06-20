@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwMapsLibTests", "SwMapsLibTests\SwMapsLibTests.csproj", "{AFF77BBF-B5CB-4118-918A-788474A49D0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwMapsLib", "SwMapsLib\SwMapsLib.csproj", "{AF9DA970-7BE2-46F6-9B0E-41BB4C025179}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwMapsLib", "SwMapsLib\SwMapsLib.csproj", "{AF9DA970-7BE2-46F6-9B0E-41BB4C025179}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwMapsLib.Conversions", "SwMapsLib.Conversions\SwMapsLib.Conversions.csproj", "{3D250A75-CDDD-4832-BFB4-0CB3A954BD90}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{AF9DA970-7BE2-46F6-9B0E-41BB4C025179}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF9DA970-7BE2-46F6-9B0E-41BB4C025179}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF9DA970-7BE2-46F6-9B0E-41BB4C025179}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D250A75-CDDD-4832-BFB4-0CB3A954BD90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D250A75-CDDD-4832-BFB4-0CB3A954BD90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D250A75-CDDD-4832-BFB4-0CB3A954BD90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D250A75-CDDD-4832-BFB4-0CB3A954BD90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
