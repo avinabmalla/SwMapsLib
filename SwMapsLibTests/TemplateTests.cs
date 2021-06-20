@@ -15,7 +15,13 @@ namespace SwMapsLibTests
 		[TestMethod]
 		public void ReadV2Template()
 		{
-			
+			var path = @"Data\SWMaps_GPRS_Master.swmr";
+			var reader = new TemplateReader(path);
+			var template = reader.Read();
+
+			var writer = new TemplateV2Writer(template);
+			writer.WriteTemplate(@"Data\SWMaps_GPRS_Master_re.swmt");
+
 		}
 
 		[TestMethod]

@@ -28,10 +28,10 @@ namespace SwMapsLib.Utils
 				}
 				else
 				{
-					return default(string);
+					return "";
 				}
 			}
-			catch { return default(string); }
+			catch { return ""; }
 		}
 
 		public static int ReadInt32(this SQLiteDataReader reader, string colName)

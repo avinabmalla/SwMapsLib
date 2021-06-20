@@ -100,7 +100,7 @@ namespace SwMapsLib.IO
 					a.UUID = Guid.NewGuid().ToString();
 					AttributeFieldIDs[layer + "||" + a.FieldName] = a.UUID;
 
-					var dataType = reader.ReadString("data_type").ToUpper();
+					var dataType = reader.ReadString("data_type");
 					a.DataType = SwMapsTypes.AttributeTypeFromString(dataType);
 
 
@@ -173,7 +173,7 @@ namespace SwMapsLib.IO
 
 					attr.FeatureID = fid;
 
-					var dataType = reader.ReadString("data_type").ToUpper();
+					var dataType = reader.ReadString("data_type");
 					attr.DataType = SwMapsTypes.AttributeTypeFromString(dataType);
 
 					ret.Add(attr);
@@ -311,10 +311,10 @@ namespace SwMapsLib.IO
 					layer.Active = reader.ReadInt32("active") == 1;
 					layer.Drawn = reader.ReadInt32("drawn") == 1;
 
-					var geomType = reader.ReadString("data_type").ToUpper();
+					var geomType = reader.ReadString("data_type");
 					layer.GeometryType = SwMapsTypes.GeometryTypeFromString(geomType);
 
-					var pointSymbol = reader.ReadString("point_shape").ToUpper();
+					var pointSymbol = reader.ReadString("point_shape");
 					layer.PointShape = SwMapsTypes.PointShapeFromString(pointSymbol);
 
 					if (layer.GeometryType == SwMapsGeometryType.Point)

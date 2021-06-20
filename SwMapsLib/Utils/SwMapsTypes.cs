@@ -11,15 +11,18 @@ namespace SwMapsLib.Utils
 	{
 		public static SwMapsPointShape PointShapeFromString(string ptShape)
 		{
-			var ret = SwMapsPointShape.Circle;
+			if (ptShape == null) return SwMapsPointShape.Circle;
+			var pu = ptShape.ToUpper().Trim();
 
-			if (ptShape == "CIRCLE")
+
+			var ret = SwMapsPointShape.Circle;
+			if (pu == "CIRCLE")
 				ret = SwMapsPointShape.Circle;
-			else if (ptShape == "CIRCLE_FILL")
+			else if (pu == "CIRCLE_FILL")
 				ret = SwMapsPointShape.FilledCircle;
-			else if (ptShape == "TRIANGLE")
+			else if (pu == "TRIANGLE")
 				ret = SwMapsPointShape.Triangle;
-			else if (ptShape == "SQUARE")
+			else if (pu == "SQUARE")
 				ret = SwMapsPointShape.Square;
 
 			return ret;
@@ -27,19 +30,21 @@ namespace SwMapsLib.Utils
 
 		public static SwMapsAttributeType AttributeTypeFromString(string dataType)
 		{
+			if (dataType == null) return SwMapsAttributeType.Text;
+			var dt = dataType.ToUpper().Trim();
 			var ret = SwMapsAttributeType.Text;
 
-			if (dataType == "TEXT")
+			if (dt == "TEXT")
 				ret = SwMapsAttributeType.Text;
-			else if (dataType == "NUMERIC")
+			else if (dt == "NUMERIC")
 				ret = SwMapsAttributeType.Numeric;
-			else if (dataType == "OPTIONS")
+			else if (dt == "OPTIONS")
 				ret = SwMapsAttributeType.Options;
-			else if (dataType == "PHOTO")
+			else if (dt == "PHOTO")
 				ret = SwMapsAttributeType.Photo;
-			else if (dataType == "AUDIO")
+			else if (dt == "AUDIO")
 				ret = SwMapsAttributeType.Audio;
-			else if (dataType == "VIDEO")
+			else if (dt == "VIDEO")
 				ret = SwMapsAttributeType.Video;
 
 			return ret;
@@ -47,13 +52,16 @@ namespace SwMapsLib.Utils
 
 		public static SwMapsProjectAttributeType ProjectAttributeTypeFromString(string dataType)
 		{
+			if (dataType == null) return SwMapsProjectAttributeType.Text;
+			var dt = dataType.ToUpper().Trim();
+
 			var ret = SwMapsProjectAttributeType.Text;
 
-			if (dataType == "TEXT")
+			if (dt == "TEXT")
 				ret = SwMapsProjectAttributeType.Text;
-			else if (dataType == "NUMERIC")
+			else if (dt == "NUMERIC")
 				ret = SwMapsProjectAttributeType.Numeric;
-			else if (dataType == "OPTIONS")
+			else if (dt == "OPTIONS")
 				ret = SwMapsProjectAttributeType.Options;
 
 			return ret;
@@ -61,13 +69,16 @@ namespace SwMapsLib.Utils
 
 		public static SwMapsGeometryType GeometryTypeFromString(string geomType)
 		{
+			if (geomType == null) return SwMapsGeometryType.Point;
+			var gt = geomType.ToUpper().Trim();
+
 			var ret = SwMapsGeometryType.Point;
 
-			if (geomType == "POINT")
+			if (gt == "POINT")
 				ret = SwMapsGeometryType.Point;
-			if (geomType == "LINE")
+			if (gt == "LINE")
 				ret = SwMapsGeometryType.Line;
-			if (geomType == "POLYGON")
+			if (gt == "POLYGON")
 				ret = SwMapsGeometryType.Polygon;
 
 			return ret;

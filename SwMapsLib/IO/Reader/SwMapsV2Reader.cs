@@ -82,7 +82,7 @@ namespace SwMapsLib.IO
 
 						a.IsRequired = reader.ReadInt32("required_field") == 1;
 
-						var dataType = reader.ReadString("data_type").ToUpper();
+						var dataType = reader.ReadString("data_type");
 						a.DataType = SwMapsTypes.ProjectAttributeTypeFromString(dataType);
 
 						var choices = reader.ReadString("field_choices");
@@ -110,7 +110,7 @@ namespace SwMapsLib.IO
 					a.LayerID = reader.ReadString("layer_id");
 					a.FieldName = reader.ReadString("field_name");
 
-					var dataType = reader.ReadString("data_type").ToUpper();
+					var dataType = reader.ReadString("data_type");
 					a.DataType = SwMapsTypes.AttributeTypeFromString(dataType);
 
 
@@ -136,7 +136,7 @@ namespace SwMapsLib.IO
 					a.FieldID = reader.ReadString("field_id");
 					a.Value = reader.ReadString("value");
 
-					var dataType = reader.ReadString("data_type").ToUpper();
+					var dataType = reader.ReadString("data_type");
 					a.DataType = SwMapsTypes.AttributeTypeFromString(dataType);
 
 					ret.Add(a);
@@ -180,10 +180,10 @@ namespace SwMapsLib.IO
 					layer.Name = reader.ReadString("name");
 					layer.GroupName = reader.ReadString("group_name");
 
-					var geomType = reader.ReadString("geom_type").ToUpper();
+					var geomType = reader.ReadString("geom_type");
 					layer.GeometryType = SwMapsTypes.GeometryTypeFromString(geomType);
 
-					var pointSymbol = reader.ReadString("point_symbol").ToUpper();
+					var pointSymbol = reader.ReadString("point_symbol");
 					layer.PointShape = SwMapsTypes.PointShapeFromString(pointSymbol);
 
 					layer.Color = reader.ReadInt32("color");
