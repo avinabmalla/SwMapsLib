@@ -14,9 +14,9 @@
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright © Avinab Malla, 2021</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <AssemblyVersion>1.0.2.2</AssemblyVersion>
-    <FileVersion>1.0.2.2</FileVersion>
-    <Version>1.0.2.2</Version>
+    <AssemblyVersion>1.0.2.3</AssemblyVersion>
+    <FileVersion>1.0.2.3</FileVersion>
+    <Version>1.0.2.3</Version>
   </PropertyGroup>
 
   <ItemGroup>

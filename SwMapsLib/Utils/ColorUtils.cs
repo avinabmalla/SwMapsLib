@@ -37,5 +37,16 @@ namespace SwMapsLib.Utils
 
 			return A + B + G + R;
 		}
+
+		public static string ToArgbHex(int color)
+		{
+			var clr = GetColor(color);
+			var A = clr.A.ToString("X2");
+			var R = clr.R.ToString("X2");
+			var G = clr.G.ToString("X2");
+			var B = clr.B.ToString("X2");
+
+			return A + R + G + B;
+		}
 	}
 }
