@@ -18,13 +18,21 @@ namespace SwMapsLib
 			Project = new SwMapsProject();
 		}
 
-		public SwMapsProjectAttribute AddProjectAttribute(string name, SwMapsProjectAttributeType dataType, string value = "", bool required = false,int fieldLength = 0, IEnumerable<string> options = null)
+		public void ImportTemplate(SwMapsTemplate template)
+		{
+			Project.FeatureLayers.AddRange(template.Layers);
+			Project.ProjectAttributes.AddRange(template.ProjectAttributes);
+		}
+
+
+		public SwMapsProjectAttribute AddProjectAttribute(string name, SwMapsProjectAttributeType dataType,
+			string value = "", bool required = false, int fieldLength = 0, IEnumerable<string> options = null)
 		{
 			var ret = new SwMapsProjectAttribute();
 			ret.Name = name;
 			ret.Value = value;
 			ret.DataType = dataType;
-			if(options!=null) ret.Choices = options.ToList();
+			if (options != null) ret.Choices = options.ToList();
 			ret.IsRequired = required;
 			ret.FieldLength = fieldLength;
 
@@ -60,12 +68,13 @@ namespace SwMapsLib
 			lyr.Name = layerName;
 			lyr.GeometryType = geomType;
 			lyr.Drawn = isDrawn;
-
+			lyr.Active = true;
 			Project.FeatureLayers.Add(lyr);
 			return lyr;
 		}
 
-		public void AddAttributeField(string layerName, string attrName, SwMapsAttributeType attrType, IEnumerable<string> choices = null)
+		public void AddAttributeField(string layerName, string attrName,
+			SwMapsAttributeType attrType, IEnumerable<string> choices = null)
 		{
 			SwMapsFeatureLayer layer = GetLayer(layerName);
 
@@ -82,7 +91,8 @@ namespace SwMapsLib
 			layer.AttributeFields.Add(attr);
 		}
 
-		public SwMapsFeature AddPointFeature(string layerName, double lat, double lon, double elv, DateTime? time = null)
+		public SwMapsFeature AddPointFeature(string layerName, double lat,
+			double lon, double elv, DateTime? time = null)
 		{
 			DateTime time1 = time ?? DateTime.UtcNow;
 
@@ -115,7 +125,8 @@ namespace SwMapsLib
 			return f;
 		}
 
-		public SwMapsFeature AddLineFeature(string layerName,string name, List<LatLng> points, DateTime? time = null)
+		public SwMapsFeature AddLineFeature(string layerName,
+			string name, List<LatLng> points, DateTime? time = null)
 		{
 			DateTime time1 = time ?? DateTime.UtcNow;
 
@@ -151,7 +162,8 @@ namespace SwMapsLib
 			return f;
 		}
 
-		public SwMapsFeature AddPolygonFeature(string layerName, string name, List<LatLng> points, DateTime? time = null)
+		public SwMapsFeature AddPolygonFeature(string layerName, string name,
+			List<LatLng> points, DateTime? time = null)
 		{
 			DateTime time1 = time ?? DateTime.UtcNow;
 
@@ -164,7 +176,7 @@ namespace SwMapsLib
 				throw new Exception($"Layer {layerName} is not a polygon layer!");
 
 			var f = new SwMapsFeature();
-			f.Name = name; 
+			f.Name = name;
 			f.LayerID = layer.UUID;
 			f.UUID = Guid.NewGuid().ToString();
 			f.GeometryType = SwMapsGeometryType.Polygon;
@@ -241,7 +253,7 @@ namespace SwMapsLib
 
 			layer.PointShape = pointShape;
 			var ptColor = Color.FromArgb(color.R, color.G, color.B);
-			var fillColor = Color.FromArgb(80,color.R, color.G, color.B);
+			var fillColor = Color.FromArgb(80, color.R, color.G, color.B);
 			layer.Color = ColorUtils.GetColorInt(ptColor);
 			layer.FillColor = ColorUtils.GetColorInt(fillColor);
 			layer.LineWidth = lineWidth;

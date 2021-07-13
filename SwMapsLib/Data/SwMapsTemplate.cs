@@ -19,6 +19,7 @@ namespace SwMapsLib.Data
 			DatabasePath = dbpath;
 		}
 
+		public SwMapsTemplate() { }
 
 		public List<string> Groups
 		{

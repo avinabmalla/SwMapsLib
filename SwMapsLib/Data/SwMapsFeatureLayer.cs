@@ -10,16 +10,16 @@ namespace SwMapsLib.Data
 	public class SwMapsFeatureLayer
 	{
 		public string UUID { get; set; } = Guid.NewGuid().ToString();
-		public string Name { get; set; }
-		public string GroupName { get; set; }
-		public SwMapsGeometryType GeometryType { get; set; }
+		public string Name { get; set; } = "";
+		public string GroupName { get; set; } = "";
+		public SwMapsGeometryType GeometryType { get; set; } = SwMapsGeometryType.Point;
 		public int Color { get; set; } = 0;
 		public int FillColor { get; set; } = 0;
 		public float LineWidth { get; set; } = 3;
 		public SwMapsPointShape PointShape { get; set; } = SwMapsPointShape.Circle;
 		public bool Drawn { get; set; } = false;
 		public bool Active { get; set; } = true;
-		public string LabelFieldID { get; set; }
+		public string LabelFieldID { get; set; } = "";
 		public byte[] PngSymbol { get; set; }
 
 		public List<SwMapsAttributeField> AttributeFields { get; set; } = new List<SwMapsAttributeField>();
@@ -50,7 +50,7 @@ namespace SwMapsLib.Data
 
 		public override string ToString()
 		{
-			return Name;
+			return Name + " [" + SwMapsTypes.GeometryTypeToString(this.GeometryType) + "]";
 		}
 
 	}

@@ -16,14 +16,19 @@ namespace SwMapsLib.Utils
 			return Color.FromArgb(A, R, G, B);
 		}
 
+		public static int GetColorInt(byte A, byte R, byte G, byte B)
+		{
+			return (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff);
+		}
+
+
 		public static int GetColorInt(Color color)
 		{
 			byte A = color.A;
 			byte R = color.R;
 			byte G = color.G;
 			byte B = color.B;
-
-			return  (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff);
+			return GetColorInt(A, R, G, B);
 		}
 
 

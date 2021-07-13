@@ -17,7 +17,7 @@ namespace SwMapsLib.Data
 
 		public override string ToString()
 		{
-			return FieldName + ":" + SwMapsTypes.AttributeTypeToString(DataType);
+			return FieldName + " [" + SwMapsTypes.AttributeTypeToString(DataType) + "]";
 		}
 	}
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SwMapsLib.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,10 @@ namespace SwMapsLib.Data
 		public List<string> Choices { get; set; } = new List<string>();
 		public bool IsRequired { get; set; } = false;
 		public int FieldLength { get; set; } = 0;
+
+		public override string ToString()
+		{
+			return Name + " [" + SwMapsTypes.ProjectAttributeTypeToString(DataType) + "]";
+		}
 	}
 }

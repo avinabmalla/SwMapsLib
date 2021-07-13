@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SwMapsLib.IO.Reader;
-using SwMapsLib.IO.Writer;
+using SwMapsLib.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
