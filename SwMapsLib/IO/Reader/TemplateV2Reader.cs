@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace SwMapsLib.IO.Reader
+namespace SwMapsLib.IO
 {
 	class TemplateV2Reader
 	{

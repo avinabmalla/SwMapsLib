@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace SwMapsLib.IO.Reader
+namespace SwMapsLib.IO
 {
 	class TemplateV1Reader
 	{
@@ -89,7 +89,7 @@ namespace SwMapsLib.IO.Reader
 
 					layer.Color = reader.ReadInt32("point_color");
 					layer.LineWidth = reader.ReadSingle("line_width") / 2f;
-					layer.Active = reader.ReadInt32("active") == 1;
+					layer.Active = true;
 					layer.Drawn = reader.ReadInt32("drawn") == 1;
 
 					var geomType = reader.ReadString("data_type");

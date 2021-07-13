@@ -6,7 +6,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Text;
 
-namespace SwMapsLib.IO.Writer
+namespace SwMapsLib.IO
 {
 	public class TemplateV2Writer
 	{

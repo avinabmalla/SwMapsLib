@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Text;
 
-namespace SwMapsLib.IO.Reader
+namespace SwMapsLib.IO
 {
 	public class TemplateReader
 	{

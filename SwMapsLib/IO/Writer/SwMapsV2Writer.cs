@@ -196,7 +196,7 @@ namespace SwMapsLib.IO
 				cv["name"] = lyr.Name;
 				cv["group_name"] = lyr.GroupName;
 				cv["geom_type"] = SwMapsTypes.GeometryTypeToString(lyr.GeometryType);
-				cv["point_symbol"] = lyr.PointShape;
+				cv["point_symbol"] =SwMapsTypes.PointShapeToString(lyr.PointShape);
 				cv["color"] = lyr.Color;
 				cv["fill_color"] = lyr.FillColor;
 				cv["line_width"] = lyr.LineWidth;
