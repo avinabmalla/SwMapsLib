@@ -21,6 +21,32 @@ namespace SwMapsLib.Data
 		public string DatabasePath { get; }
 		public string MediaFolderPath { get; }
 
+		public string TemplateName
+		{
+			get
+			{
+				if (ProjectInfo.ContainsKey("template_name")) return ProjectInfo["template_name"];
+				return "";
+			}
+			set
+			{
+				ProjectInfo["template_name"] = value;
+			}
+		}
+
+		public string TemplateAuthor
+		{
+			get
+			{
+				if (ProjectInfo.ContainsKey("template_author")) return ProjectInfo["template_author"];
+				return "";
+			}
+			set
+			{
+				ProjectInfo["template_author"] = value;
+			}
+		}
+
 		public SwMapsFeature GetFeature(string id)
 		{
 			return Features.FirstOrDefault(iterator => iterator.UUID == id);
