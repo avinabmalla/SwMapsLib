@@ -28,13 +28,15 @@ namespace SwMapsLib
 		public SwMapsProjectAttribute AddProjectAttribute(string name, SwMapsProjectAttributeType dataType,
 			string value = "", bool required = false, int fieldLength = 0, IEnumerable<string> options = null)
 		{
-			var ret = new SwMapsProjectAttribute();
-			ret.Name = name;
-			ret.Value = value;
-			ret.DataType = dataType;
-			if (options != null) ret.Choices = options.ToList();
-			ret.IsRequired = required;
-			ret.FieldLength = fieldLength;
+			var ret = new SwMapsProjectAttribute
+			{
+				Name = name,
+				Value = value,
+				DataType = dataType,
+				IsRequired = required,
+				FieldLength = fieldLength,
+				Choices = (options != null) ? options.ToList() : new List<string>()
+			};
 
 			Project.ProjectAttributes.Add(ret);
 			return ret;
@@ -63,12 +65,14 @@ namespace SwMapsLib
 			}
 
 
-			var lyr = new SwMapsFeatureLayer();
-			lyr.UUID = Guid.NewGuid().ToString();
-			lyr.Name = layerName;
-			lyr.GeometryType = geomType;
-			lyr.Drawn = isDrawn;
-			lyr.Active = true;
+			var lyr = new SwMapsFeatureLayer
+			{
+				UUID = Guid.NewGuid().ToString(),
+				Name = layerName,
+				GeometryType = geomType,
+				Drawn = isDrawn,
+				Active = true
+			};
 			Project.FeatureLayers.Add(lyr);
 			return lyr;
 		}
@@ -81,12 +85,14 @@ namespace SwMapsLib
 			if (layer == null)
 				throw new Exception($"Cannot find layer having name {layerName}!");
 
-			var attr = new SwMapsAttributeField();
-			attr.LayerID = layer.UUID;
-			attr.FieldName = attrName;
-			attr.DataType = attrType;
+			var attr = new SwMapsAttributeField
+			{
+				LayerID = layer.UUID,
+				FieldName = attrName,
+				DataType = attrType,
+				Choices = (choices != null) ? choices.ToList() : new List<string>()
+			};
 
-			if (choices != null) attr.Choices.AddRange(choices);
 
 			layer.AttributeFields.Add(attr);
 		}
@@ -104,20 +110,24 @@ namespace SwMapsLib
 			if (layer.GeometryType != SwMapsGeometryType.Point)
 				throw new Exception($"Layer {layerName} is not a point layer!");
 
-			var f = new SwMapsFeature();
-			f.LayerID = layer.UUID;
-			f.UUID = Guid.NewGuid().ToString();
-			f.GeometryType = SwMapsGeometryType.Point;
+			var f = new SwMapsFeature
+			{
+				LayerID = layer.UUID,
+				UUID = Guid.NewGuid().ToString(),
+				GeometryType = SwMapsGeometryType.Point
+			};
 
-			var pt = new SwMapsPoint();
-			pt.FeatureID = f.UUID;
-			pt.Seq = 0;
-			pt.Latitude = lat;
-			pt.Longitude = lon;
-			pt.Elevation = elv;
-			pt.FixID = 0;
-			pt.Time = TimeHelper.DateTimeToJavaTimeStamp(time1);
-			pt.StartTime = TimeHelper.DateTimeToJavaTimeStamp(time1);
+			var pt = new SwMapsPoint
+			{
+				FeatureID = f.UUID,
+				Seq = 0,
+				Latitude = lat,
+				Longitude = lon,
+				Elevation = elv,
+				FixID = 0,
+				Time = TimeHelper.DateTimeToJavaTimeStamp(time1),
+				StartTime = TimeHelper.DateTimeToJavaTimeStamp(time1)
+			};
 			f.Points.Add(pt);
 
 			Project.Features.Add(f);
@@ -138,23 +148,27 @@ namespace SwMapsLib
 			if (layer.GeometryType != SwMapsGeometryType.Line)
 				throw new Exception($"Layer {layerName} is not a line layer!");
 
-			var f = new SwMapsFeature();
-			f.Name = name;
-			f.LayerID = layer.UUID;
-			f.UUID = Guid.NewGuid().ToString();
-			f.GeometryType = SwMapsGeometryType.Line;
+			var f = new SwMapsFeature
+			{
+				Name = name,
+				LayerID = layer.UUID,
+				UUID = Guid.NewGuid().ToString(),
+				GeometryType = SwMapsGeometryType.Line
+			};
 
 			foreach (var p in points)
 			{
-				var pt = new SwMapsPoint();
-				pt.FeatureID = f.UUID;
-				pt.Seq = f.Points.Count;
-				pt.Latitude = p.Latitude;
-				pt.Longitude = p.Longitude;
-				pt.Elevation = p.Elevation;
-				pt.FixID = 0;
-				pt.Time = TimeHelper.DateTimeToJavaTimeStamp(time1);
-				pt.StartTime = TimeHelper.DateTimeToJavaTimeStamp(time1);
+				var pt = new SwMapsPoint
+				{
+					FeatureID = f.UUID,
+					Seq = f.Points.Count,
+					Latitude = p.Latitude,
+					Longitude = p.Longitude,
+					Elevation = p.Elevation,
+					FixID = 0,
+					Time = TimeHelper.DateTimeToJavaTimeStamp(time1),
+					StartTime = TimeHelper.DateTimeToJavaTimeStamp(time1)
+				};
 				f.Points.Add(pt);
 			}
 
@@ -175,23 +189,27 @@ namespace SwMapsLib
 			if (layer.GeometryType != SwMapsGeometryType.Polygon)
 				throw new Exception($"Layer {layerName} is not a polygon layer!");
 
-			var f = new SwMapsFeature();
-			f.Name = name;
-			f.LayerID = layer.UUID;
-			f.UUID = Guid.NewGuid().ToString();
-			f.GeometryType = SwMapsGeometryType.Polygon;
+			var f = new SwMapsFeature
+			{
+				Name = name,
+				LayerID = layer.UUID,
+				UUID = Guid.NewGuid().ToString(),
+				GeometryType = SwMapsGeometryType.Polygon
+			};
 
 			foreach (var p in points)
 			{
-				var pt = new SwMapsPoint();
-				pt.FeatureID = f.UUID;
-				pt.Seq = f.Points.Count;
-				pt.Latitude = p.Latitude;
-				pt.Longitude = p.Longitude;
-				pt.Elevation = p.Elevation;
-				pt.FixID = 0;
-				pt.Time = TimeHelper.DateTimeToJavaTimeStamp(time1);
-				pt.StartTime = TimeHelper.DateTimeToJavaTimeStamp(time1);
+				var pt = new SwMapsPoint
+				{
+					FeatureID = f.UUID,
+					Seq = f.Points.Count,
+					Latitude = p.Latitude,
+					Longitude = p.Longitude,
+					Elevation = p.Elevation,
+					FixID = 0,
+					Time = TimeHelper.DateTimeToJavaTimeStamp(time1),
+					StartTime = TimeHelper.DateTimeToJavaTimeStamp(time1)
+				};
 				f.Points.Add(pt);
 			}
 
@@ -235,12 +253,14 @@ namespace SwMapsLib
 				}
 			}
 
-			var attr = new SwMapsAttributeValue();
-			attr.FieldID = attrField.UUID;
-			attr.FeatureID = feature.UUID;
-			attr.FieldName = attrField.FieldName;
-			attr.DataType = attrField.DataType;
-			attr.Value = value;
+			var attr = new SwMapsAttributeValue
+			{
+				FieldID = attrField.UUID,
+				FeatureID = feature.UUID,
+				FieldName = attrField.FieldName,
+				DataType = attrField.DataType,
+				Value = value
+			};
 
 			feature.AttributeValues.Add(attr);
 		}

@@ -20,9 +20,9 @@ namespace SwMapsLib.Conversions.KMZ
 		public bool ExportPhotos { get; set; } = true;
 		public bool ExportTracks { get; set; } = true;
 		public bool ExportAllLayers { get; set; } = true;
-		public bool ExportLineVertices { get; set; } = true;
+		public bool ExportLineVertices { get; set; } = false;
 
-		public List<string> LayersToExport { get; set; }
+		public List<string> LayersToExport { get; set; } = new List<string>();
 
 		public IFeatureAdditionalDataDecoder FeatureAdditionalDataDecoder { get; set; } = new DefaultFeatureAdditionalDataDecoder();
 
@@ -75,13 +75,27 @@ namespace SwMapsLib.Conversions.KMZ
 				docStream.Write(docBytes, 0, docBytes.Length);
 				docStream.Close();
 
+				foreach (var l in Project.FeatureLayers)
+				{
+					if (l.PngSymbol == null) continue;
+					var fileEntry = zip.CreateEntry("files/icons/" + l.Name + ".png");
+					var stream = fileEntry.Open();
+					stream.Write(l.PngSymbol, 0, l.PngSymbol.Length);
+					stream.Close();
+				}
 
 				var photoFiles = GetPhotoFileList();
 				foreach (var ph in photoFiles)
 				{
+					var filePath = ph;
+					if (File.Exists(ph) == false)
+					{
+						filePath = Path.Combine(Project.MediaFolderPath, ph);
+						if (File.Exists(ph) == false) continue;
+					}
 					var fileEntry = zip.CreateEntry("files/" + Path.GetFileName(ph));
 					var stream = fileEntry.Open();
-					var bytes = File.ReadAllBytes(Project.MediaFolderPath+ "\\" + ph);
+					var bytes = File.ReadAllBytes(filePath);
 					stream.Write(bytes, 0, bytes.Length);
 					stream.Close();
 				}
@@ -193,8 +207,8 @@ namespace SwMapsLib.Conversions.KMZ
 			{
 				var layer = Project.GetLayer(folder);
 				string folderName = folder;
-				if(layer!=null)	 folderName = layer.Name;
-				
+				if (layer != null) folderName = layer.Name;
+
 				var placemarks = folders[folder];
 				kmlFile.Add("<Folder>");
 				kmlFile.Add($"<name>{folderName}</name>");
@@ -480,18 +494,20 @@ namespace SwMapsLib.Conversions.KMZ
 					Description += " <tr><td>" + field.FieldName + "</td>";
 					if (field.DataType == SwMapsAttributeType.Photo)
 					{
+
 						if (valueText == "")
 						{
 							Description += "<td></td></tr>";
 						}
 						else
 						{
-							Description += "<td><img src='files/" + valueText + "' width='200' /></td></tr>";
+							var fileName = Path.GetFileName(valueText);
+							Description += "<td><img src='files/" + fileName + "' width='200' /></td></tr>";
 						}
 					}
 					else if (field.DataType == SwMapsAttributeType.Text
-						  || field.DataType == SwMapsAttributeType.Numeric
-						  || field.DataType == SwMapsAttributeType.Options)
+							|| field.DataType == SwMapsAttributeType.Numeric
+							|| field.DataType == SwMapsAttributeType.Options)
 					{
 
 						Description += "<td>" + valueText + "</td></tr>";
@@ -527,12 +543,12 @@ namespace SwMapsLib.Conversions.KMZ
 			folders[layer.UUID].Add("<IconStyle>");
 			if (writeColor)
 			{
-				folders[layer.UUID].Add("<color>" + ColorUtils.ToAbgrHex(layer.Color) + "</color>");
+				folders[layer.UUID].Add("<color>#" + ColorUtils.ToAbgrHex(layer.Color) + "</color>");
 				folders[layer.UUID].Add("<scale>0.5</scale>");
 			}
 			else
 			{
-				folders[layer.UUID].Add("<scale>0.7</scale>");
+				folders[layer.UUID].Add("<scale>0.5</scale>");
 			}
 			folders[layer.UUID].Add("<Icon>");
 			folders[layer.UUID].Add($"<href>{iconPath}</href>");
@@ -545,21 +561,22 @@ namespace SwMapsLib.Conversions.KMZ
 			folders[layer.UUID].Add("</Style>");
 
 
-			folders[layer.UUID].Add("<Style id=\"${layer.Name}-Style\">");
+			folders[layer.UUID].Add($"<Style id=\"{layer.Name}-Style\">");
 			folders[layer.UUID].Add("<LineStyle>");
-			folders[layer.UUID].Add("<color>" + ColorUtils.ToAbgrHex(layer.Color) + "</color>");
+			folders[layer.UUID].Add("<color>#" + ColorUtils.ToAbgrHex(layer.Color) + "</color>");
 			folders[layer.UUID].Add("<width>3</width>");
 			folders[layer.UUID].Add("</LineStyle>");
 			folders[layer.UUID].Add("<PolyStyle>");
-			folders[layer.UUID].Add("<color>" + ColorUtils.ToAbgrHex(layer.FillColor) + "</color>");
+			folders[layer.UUID].Add("<color>#" + ColorUtils.ToAbgrHex(layer.FillColor) + "</color>");
 			folders[layer.UUID].Add("</PolyStyle>");
 			folders[layer.UUID].Add("</Style>");
 		}
 
 		private void AddPhoto(SwMapsPhotoPoint ph)
 		{
+			var fileName = Path.GetFileName(ph.FileName);
 			folders["_PHOTOS"].Add("<Placemark>");
-			folders["_PHOTOS"].Add($"<description><![CDATA[<img style=\"width:400px\" src=\"files/{ph.FileName}\"/><br/><b>{ph.Remarks}</b>]]></description>");
+			folders["_PHOTOS"].Add($"<description><![CDATA[<img style=\"width:400px\" src=\"files/{fileName}\"/><br/><b>{ph.Remarks}</b>]]></description>");
 			folders["_PHOTOS"].Add("<styleUrl>#PhotoIcon</styleUrl>");
 			folders["_PHOTOS"].Add("<Point>");
 			folders["_PHOTOS"].Add($"<coordinates>{ph.Location.Longitude},{ph.Location.Latitude},{ph.Location.Elevation}</coordinates>");
@@ -574,11 +591,11 @@ namespace SwMapsLib.Conversions.KMZ
 
 			folders["_TRACKS"].Add($"<Style id=\"{styleName}\">");
 			folders["_TRACKS"].Add("<LineStyle>");
-			folders["_TRACKS"].Add("<color>" + ColorUtils.ToAbgrHex(pl.Color) + "</color>");
+			folders["_TRACKS"].Add("<color>#" + ColorUtils.ToAbgrHex(pl.Color) + "</color>");
 			folders["_TRACKS"].Add("<width>3</width>");
 			folders["_TRACKS"].Add("</LineStyle>");
 			folders["_TRACKS"].Add("<PolyStyle>");
-			folders["_TRACKS"].Add("<color>" + ColorUtils.ToAbgrHex(pl.Color) + "</color>");
+			folders["_TRACKS"].Add("<color>#" + ColorUtils.ToAbgrHex(pl.Color) + "</color>");
 			folders["_TRACKS"].Add("</PolyStyle>");
 			folders["_TRACKS"].Add("</Style>");
 

@@ -40,7 +40,7 @@ namespace SwMapsLib.Data
 				if (GeometryType == SwMapsGeometryType.Point) return 0;
 				var pts = Points.Select(pt => pt.ToLatLng()).ToList();
 				double l = 0;
-				for (int i = 0; i < pts.Count; i++)
+				for (int i = 0; i < pts.Count-1; i++)
 				{
 					l += SphericalUtil.computeDistanceBetween(pts[i], pts[i + 1]);
 				}
@@ -48,7 +48,7 @@ namespace SwMapsLib.Data
 				{
 					l += SphericalUtil.computeDistanceBetween(pts.Last(), pts.First());
 				}
-				return l;
+				return Math.Round(l,4);
 			}
 		}
 		public object Area
@@ -57,8 +57,16 @@ namespace SwMapsLib.Data
 			{
 				if (GeometryType != SwMapsGeometryType.Polygon) return 0;
 				var pts = Points.Select(pt => pt.ToLatLng()).ToList();
-				return SphericalUtil.computeArea(pts);
+				return Math.Round(SphericalUtil.computeArea(pts),4);
 			}
 		}
+
+		public long GetLastModifiedTime()
+		{
+			long maxTime = 0;
+			foreach (var pt in Points) maxTime = Math.Max(pt.Time, maxTime);
+			return maxTime;
+		}
+
 	}
 }

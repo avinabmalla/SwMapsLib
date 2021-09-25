@@ -45,7 +45,7 @@ namespace SwMapsLib.IO
 				using (var sqlTrans = conn.BeginTransaction())
 				{
 
-					CreateTables(conn,sqlTrans);
+					CreateTables(conn, sqlTrans);
 					WriteProjectInfo(conn, sqlTrans);
 					WriteProjectAttributes(conn, sqlTrans);
 
@@ -70,7 +70,7 @@ namespace SwMapsLib.IO
 			GC.WaitForPendingFinalizers();
 		}
 
-		
+
 
 		void CreateTables(SQLiteConnection conn, SQLiteTransaction sqlTrans)
 		{
@@ -161,7 +161,7 @@ namespace SwMapsLib.IO
 
 		void WriteProjectInfo(SQLiteConnection conn, SQLiteTransaction sqlTrans)
 		{
-			foreach(var key in Project.ProjectInfo.Keys)
+			foreach (var key in Project.ProjectInfo.Keys)
 			{
 				var cv = new Dictionary<string, object>();
 				cv["attr"] = key;
@@ -176,7 +176,7 @@ namespace SwMapsLib.IO
 				var cv = new Dictionary<string, object>();
 				cv["attr"] = attr.Name;
 				cv["value"] = attr.Value;
-				conn.Insert("project_attributes", cv,sqlTrans);
+				conn.Insert("project_attributes", cv, sqlTrans);
 			}
 		}
 
@@ -273,7 +273,15 @@ namespace SwMapsLib.IO
 					cv["item_id"] = f.FeatureID;
 					cv["field"] = attr.FieldName;
 					cv["data_type"] = SwMapsTypes.AttributeTypeToString(attr.DataType);
-					cv["value"] = attr.Value;
+
+					if (SwMapsTypes.IsMediaAttribute(attr.DataType))
+					{
+						cv["value"] = Path.GetFileName(attr.Value);
+					}
+					else
+					{
+						cv["value"] = attr.Value;
+					}
 					cv["item_layer"] = layerName;
 					conn.Insert("attribute_data", cv, sqlTrans);
 				}
@@ -289,7 +297,7 @@ namespace SwMapsLib.IO
 				cv["lon"] = ph.Location.Longitude;
 				cv["elv"] = ph.Location.Elevation;
 				cv["description"] = ph.Remarks;
-				cv["filename"] = ph.FileName;
+				cv["filename"] = Path.GetFileName(ph.FileName);
 				conn.Insert("photos", cv, sqlTrans);
 			}
 		}

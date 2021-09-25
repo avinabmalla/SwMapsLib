@@ -31,12 +31,16 @@ namespace SwMapsLib.IO
 			SwMapsProject project = reader.Read();
 			if (readMediaFiles)
 			{
-				var files = Directory.EnumerateFiles($"{ProjectTempDir}\\Photos\\");
-				foreach (var file in files)
+				var dir = $"{ProjectTempDir}\\Photos\\";
+				if (Directory.Exists(dir))
 				{
-					var name = Path.GetFileName(file);
-					var data = File.ReadAllBytes(file);
-					project.MediaFiles[name] = data;
+					var files = Directory.EnumerateFiles($"{ProjectTempDir}\\Photos\\");
+					foreach (var file in files)
+					{
+						var name = Path.GetFileName(file);
+						var data = File.ReadAllBytes(file);
+						project.MediaFiles[name] = data;
+					}
 				}
 			}
 			return project;

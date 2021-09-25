@@ -70,6 +70,7 @@ namespace SwMapsLib.IO
 
 			var dbPath = Path.GetTempFileName();
 			new SwMapsV2Writer(Project).WriteSwmapsDb(dbPath);
+			if (File.Exists(path)) File.Delete(path);
 
 			using (var archive = ZipFile.Open(path, ZipArchiveMode.Create))
 			{
@@ -87,7 +88,7 @@ namespace SwMapsLib.IO
 						ZipArchiveEntry phEntry = archive.CreateEntry($"Photos/{fileName}");
 						using (BinaryWriter writer = new BinaryWriter(phEntry.Open()))
 						{
-							writer.Write(File.ReadAllBytes(fileName));
+							writer.Write(File.ReadAllBytes(ph));
 						}
 					}
 				}

@@ -39,7 +39,6 @@ namespace SwMapsLib.Utils
 			var R = clr.R.ToString("X2");
 			var G = clr.G.ToString("X2");
 			var B = clr.B.ToString("X2");
-
 			return A + B + G + R;
 		}
 

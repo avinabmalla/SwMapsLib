@@ -69,7 +69,8 @@ namespace SwMapsLib.Data
 		}
 		public SwMapsProject()
 		{
-
+			DatabasePath = "";
+			MediaFolderPath = "";
 		}
 
 		/// <summary>

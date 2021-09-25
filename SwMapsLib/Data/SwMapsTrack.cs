@@ -1,4 +1,5 @@
 ﻿using SwMapsLib.Primitives;
+using SwMapsLib.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,27 @@ namespace SwMapsLib.Data
 		public string Remarks { get; set; }
 		public List<SwMapsPoint> Vertices { get; set; } = new List<SwMapsPoint>();
 		public List<LatLng> PointsLL => Vertices.Select(it => new LatLng(it.Latitude, it.Longitude)).ToList();
+		public double Length
+		{
+			get
+			{
+				var pts = Vertices.Select(pt => pt.ToLatLng()).ToList();
+				double l = 0;
+				for (int i = 0; i < pts.Count; i++)
+				{
+					l += SphericalUtil.computeDistanceBetween(pts[i], pts[i + 1]);
+				}
+				return l;
+			}
+		}
+
+		public long GetLastModifiedTime()
+		{
+			long maxTime = 0;
+			foreach (var pt in Vertices) maxTime = Math.Max(pt.Time, maxTime);
+			return maxTime;
+		}
+
 		public override string ToString()
 		{
 			return Name;

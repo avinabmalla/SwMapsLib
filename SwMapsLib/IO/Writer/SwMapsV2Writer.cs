@@ -274,7 +274,16 @@ namespace SwMapsLib.IO
 					cv["item_id"] = attr.FeatureID;
 					cv["field_id"] = attr.FieldID;
 					cv["data_type"] = SwMapsTypes.AttributeTypeToString(attr.DataType);
-					cv["value"] = attr.Value;
+
+					if (SwMapsTypes.IsMediaAttribute(attr.DataType))
+					{
+						cv["value"] = Path.GetFileName(attr.Value);
+					}
+					else
+					{
+						cv["value"] = attr.Value;
+					}
+
 					conn.Insert("attribute_values", cv, sqlTrans);
 				}
 			}
@@ -288,7 +297,7 @@ namespace SwMapsLib.IO
 
 				cv["uuid"] = ph.ID;
 				cv["remarks"] = ph.Remarks;
-				cv["photo_path"] = ph.FileName;
+				cv["photo_path"] = Path.GetFileName(ph.FileName);
 				conn.Insert("photos", cv, sqlTrans);
 
 				var pt = ph.Location;

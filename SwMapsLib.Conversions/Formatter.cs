@@ -15,7 +15,7 @@ namespace SwMapsLib.Conversions
 
 		public static string GetTimeLabel(long time)
 		{
-			return TimeHelper.JavaTimeStampToDateTime(time).ToString("MM/dd/yyyy HH:mm:ss.SSS z");
+			return TimeHelper.JavaTimeStampToDateTime(time).ToString("MM/dd/yyyy HH:mm:ss zzz");
 		}
 
 		internal string FormatLatLng(double l)

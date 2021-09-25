@@ -6,6 +6,7 @@ using SwMapsLib.Data;
 using SwMapsLib.Utils;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Linq;
 
 namespace SwMapsLib.Conversions.GPKG
 {
@@ -22,7 +23,7 @@ namespace SwMapsLib.Conversions.GPKG
 		public bool ExportAllLayers { get; set; } = true;
 		public bool ExportLineVertices { get; set; } = true;
 		public bool IncludeMediaFilesAsBlob { get; set; } = true;
-		public List<string> LayersToExport { get; set; }
+		public List<string> LayersToExport { get; set; } = new List<string>();
 
 
 		public SwMapsGpkgWriter(SwMapsProject project)
@@ -34,9 +35,19 @@ namespace SwMapsLib.Conversions.GPKG
 		public void Export(string path)
 		{
 			conn = new SQLiteConnection($"Data Source={path};Version=3;");
+			conn.Open();
 			sqlTrans = conn.BeginTransaction();
 			CreateTables();
 
+			foreach (var l in Project.FeatureLayers)
+			{
+				if (LayersToExport.Contains(l.Name) || ExportAllLayers) AddLayer(l);
+			}
+
+			if (ExportPhotos) AddPhotos();
+			if (ExportTracks) AddTracks();
+			sqlTrans.Commit();
+			conn.Close();
 		}
 
 		private void CreateTables()
@@ -72,6 +83,23 @@ namespace SwMapsLib.Conversions.GPKG
 							"definition	TEXT NOT NULL," +
 							"description	TEXT," +
 							"PRIMARY KEY(srs_id));");
+
+			conn.ExecuteSQL("CREATE VIEW geometry_columns AS " +
+				"SELECT table_name AS f_table_name, column_name AS f_geometry_column, " +
+				"(CASE geometry_type_name WHEN 'GEOMETRY' THEN 0 WHEN 'POINT' THEN 1 WHEN 'LINESTRING' THEN 2 WHEN 'POLYGON' THEN 3 WHEN 'MULTIPOINT' THEN 4 " +
+				"WHEN 'MULTILINESTRING' THEN 5 WHEN 'MULTIPOLYGON' THEN 6 WHEN 'GEOMETRYCOLLECTION' THEN 7 WHEN 'CIRCULARSTRING' THEN 8 WHEN 'COMPOUNDCURVE' THEN 9 " +
+				"WHEN 'CURVEPOLYGON' THEN 10 WHEN 'MULTICURVE' THEN 11 WHEN 'MULTISURFACE' THEN 12 WHEN 'CURVE' THEN 13 WHEN 'SURFACE' THEN 14 " +
+				"WHEN 'POLYHEDRALSURFACE' THEN 15 WHEN 'TIN' THEN 16 WHEN 'TRIANGLE' THEN 17 ELSE 0 END) AS geometry_type, " +
+				"2 + (CASE z WHEN 1 THEN 1 WHEN 2 THEN 1 ELSE 0 END) + (CASE m WHEN 1 THEN 1 WHEN 2 THEN 1 ELSE 0 END) AS coord_dimension, " +
+				"srs_id AS srid FROM gpkg_geometry_columns;");
+
+			conn.ExecuteSQL("CREATE VIEW spatial_ref_sys AS SELECT srs_id AS srid, organization AS auth_name, organization_coordsys_id AS auth_srid, definition AS srtext FROM gpkg_spatial_ref_sys;");
+
+			conn.ExecuteSQL("CREATE VIEW st_geometry_columns AS SELECT table_name, column_name, 'ST_' || geometry_type_name AS geometry_type_name, " +
+				"g.srs_id, srs_name FROM gpkg_geometry_columns as g JOIN gpkg_spatial_ref_sys AS s WHERE g.srs_id = s.srs_id;");
+
+
+			conn.ExecuteSQL("CREATE VIEW st_spatial_ref_sys AS SELECT srs_name, srs_id, organization, organization_coordsys_id, definition, description FROM gpkg_spatial_ref_sys;");
 
 			AddSrs("WGS 84 geodetic", 4326, "EPSG", 4326, EPSG4326WKT, "");
 		}
@@ -116,6 +144,118 @@ namespace SwMapsLib.Conversions.GPKG
 			cv.Add("z", z);
 			cv.Add("m", m);
 			conn.Insert("gpkg_geometry_columns", cv, sqlTrans);
+		}
+
+		private void AddTracks()
+		{
+			var tracks = Project.Tracks;
+			if (tracks.Count == 0) return;
+
+			var minLat = 90.0;
+			var maxLat = -90.0;
+			var minLon = 180.0;
+			var maxLon = -180.0;
+
+			foreach (var t in tracks)
+			{
+				foreach (var p in t.Vertices)
+				{
+					minLat = Math.Min(minLat, p.Latitude);
+					maxLat = Math.Max(maxLat, p.Latitude);
+					minLon = Math.Min(minLon, p.Longitude);
+					maxLon = Math.Max(maxLon, p.Longitude);
+				}
+			}
+
+			var columns = new List<string>();
+			columns.Add("ID INTEGER PRIMARY KEY AUTOINCREMENT");
+			columns.Add("UUID TEXT");
+			columns.Add("geom LINESTRING");
+			columns.Add("length NUMBER");
+			columns.Add("remarks TEXT");
+			columns.Add("start_time TEXT");
+			columns.Add("end_time TEXT");
+
+			var tableSql = $"CREATE TABLE Tracks({string.Join(",", columns)});";
+			conn.ExecuteSQL(tableSql);
+
+			AddContents("Tracks", "features", "Tracks", "From SW Maps", DateTime.UtcNow, minLon, minLat, maxLon, maxLat, 4326);
+			AddGeometryColumn("Tracks", "geom", "LINESTRING", 4326, 1, 0);
+
+			foreach (var t in tracks)
+			{
+				var cv = new Dictionary<string, object>();
+				var geom = GpkgGeometryConverter.LinestringToGpkg(t.Vertices);
+
+				cv.Add("UUID", t.UUID);
+				cv.Add("geom", geom);
+				cv.Add("length", t.Length);
+				cv.Add("start_time", Formatter.GetTimeLabel(t.Vertices.First().Time));
+				cv.Add("end_time", Formatter.GetTimeLabel(t.Vertices.Last().Time));
+				cv.Add("remarks", t.Remarks.Trim());
+
+				conn.Insert("Tracks", cv, sqlTrans);
+			}
+
+		}
+		private void AddPhotos()
+		{
+			var photos = Project.PhotoPoints;
+			if (photos.Count <= 0) return;
+
+			var minLat = 90.0;
+			var maxLat = -90.0;
+			var minLon = 180.0;
+			var maxLon = -180.0;
+
+			foreach (var p in photos)
+			{
+				if (File.Exists(p.FileName) == false) continue;
+
+				minLat = Math.Min(minLat, p.Location.Latitude);
+				maxLat = Math.Max(maxLat, p.Location.Latitude);
+				minLon = Math.Min(minLon, p.Location.Longitude);
+				maxLon = Math.Max(maxLon, p.Location.Longitude);
+			}
+
+			var columns = new List<string>();
+			columns.Add("ID INTEGER PRIMARY KEY AUTOINCREMENT");
+			columns.Add("UUID TEXT");
+			columns.Add("geom POINT");
+			columns.Add("latitude REAL");
+			columns.Add("longitude REAL");
+			columns.Add("elevation REAL");
+			columns.Add("time TEXT");
+			columns.Add("remarks TEXT");
+			columns.Add("photo BLOB");
+
+
+			var tableSql = $"CREATE TABLE Photos({string.Join(",", columns)});";
+			conn.ExecuteSQL(tableSql);
+
+			AddContents("Photos", "features", "Photos", "From SW Maps", DateTime.UtcNow, minLon, minLat, maxLon, maxLat, 4326);
+			AddGeometryColumn("Photos", "geom", "POINT", 4326, 1, 0);
+
+			foreach (var p in photos)
+			{
+				if (File.Exists(p.FileName) == false) continue;
+
+				var geom = GpkgGeometryConverter.PointToGpkg(p.Location);
+				var cv = new Dictionary<string, object>();
+				cv.Add("UUID", p.ID);
+				cv.Add("geom", geom);
+				cv.Add("latitude", p.Location.Latitude);
+				cv.Add("longitude", p.Location.Longitude);
+				cv.Add("elevation", p.Location.Elevation);
+				cv.Add("time", Formatter.GetTimeLabel(p.Location.Time));
+				cv.Add("remarks", p.Remarks.Trim());
+
+				if (IncludeMediaFilesAsBlob)
+				{
+					cv.Add("photo", File.ReadAllBytes(p.FileName));
+				}
+				conn.Insert("Photos", cv, sqlTrans);
+			}
 		}
 
 		private void AddLayer(SwMapsFeatureLayer layer)
@@ -168,7 +308,7 @@ namespace SwMapsLib.Conversions.GPKG
 				if (attr.DataType == SwMapsAttributeType.Audio) dataType = IncludeMediaFilesAsBlob ? "BLOB" : "TEXT";
 				if (attr.DataType == SwMapsAttributeType.Video) dataType = IncludeMediaFilesAsBlob ? "BLOB" : "TEXT";
 
-				var NewName = GetExportFieldName(attr.FieldName);
+				var NewName = attr.GetExportFieldName();
 				int count = 0;
 				foreach (var v in fields.Values)
 				{
@@ -251,13 +391,16 @@ namespace SwMapsLib.Conversions.GPKG
 					object value = attr.Value;
 
 					if (attr.DataType == SwMapsAttributeType.Numeric) value = Convert.ToDouble(attr.Value.Trim());
-					else if (attr.DataType == SwMapsAttributeType.Photo ||
-						attr.DataType == SwMapsAttributeType.Audio ||
-						attr.DataType == SwMapsAttributeType.Video)
+					else if (SwMapsTypes.IsMediaAttribute(attr.DataType))
 					{
 						if (IncludeMediaFilesAsBlob)
 						{
-							var filePath = System.IO.Path.Combine(Project.MediaFolderPath, attr.Value);
+							var filePath = attr.Value;
+							if (File.Exists(filePath) == false)
+							{
+								filePath = System.IO.Path.Combine(Project.MediaFolderPath, attr.Value);
+							}
+
 							if (File.Exists(filePath))
 							{
 								value = File.ReadAllBytes(filePath);
@@ -279,22 +422,6 @@ namespace SwMapsLib.Conversions.GPKG
 				conn.Insert(tableName, cv, sqlTrans);
 
 			}
-		}
-
-		string GetExportFieldName(string attrName)
-		{
-			var newName = attrName.Trim();
-			//Replace non alphanumeric characters
-			newName = Regex.Replace(newName, "[^A-Za-z0-9]", " ");
-			//replace multiple spaces with single space
-			newName = Regex.Replace(newName, "\\s+", " ");
-			//replace spaces with underscores
-			newName = Regex.Replace(newName, "\\s", "_");
-
-			if (Char.IsDigit(newName[0]))
-				newName = $"_{newName}";
-
-			return newName;
 		}
 
 		List<string> AddedTables = new List<string>();

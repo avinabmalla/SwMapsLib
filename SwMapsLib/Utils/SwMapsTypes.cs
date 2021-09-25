@@ -118,5 +118,13 @@ namespace SwMapsLib.Utils
 			if (gt == SwMapsGeometryType.Polygon) return "POLYGON";
 			return "POINT";
 		}
+
+		public static bool IsMediaAttribute(SwMapsAttributeType a)
+		{
+			if (a == SwMapsAttributeType.Photo) return true;
+			if (a == SwMapsAttributeType.Audio) return true;
+			if (a == SwMapsAttributeType.Video) return true;
+			return false;
+		}
 	}
 }
