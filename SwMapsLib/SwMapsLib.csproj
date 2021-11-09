@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Avinab Malla</Authors>
-    <Company>Softwel</Company>
+    <Company>Aviyaan Tech</Company>
     <Description>A library for reading and writing SW Maps project files</Description>
     <PackageIcon>playstore.png</PackageIcon>
     <PackageIconUrl />
@@ -14,9 +14,9 @@
     <RepositoryType>git</RepositoryType>
     <Copyright>Copyright © Avinab Malla, 2021</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <AssemblyVersion>1.0.4.0</AssemblyVersion>
-    <FileVersion>1.0.4.0</FileVersion>
-    <Version>1.0.4.0</Version>
+    <AssemblyVersion>1.0.6.0</AssemblyVersion>
+    <FileVersion>1.0.6.0</FileVersion>
+    <Version>1.0.6.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,11 +24,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\Icons\SW Maps\New Icon\playstore.png">
+    <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\LICENSE">
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="playstore.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

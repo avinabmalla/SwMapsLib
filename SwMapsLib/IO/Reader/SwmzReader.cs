@@ -19,6 +19,7 @@ namespace SwMapsLib.IO
 		public readonly string ProjectTempDir;
 		public bool IsV1Project;
 
+		public bool ShortenZipNames = false;
 		public SwMapsProject Read(bool readMediaFiles = false)
 		{
 			ISwMapsDbReader reader;
@@ -31,10 +32,11 @@ namespace SwMapsLib.IO
 			SwMapsProject project = reader.Read();
 			if (readMediaFiles)
 			{
-				var dir = $"{ProjectTempDir}\\Photos\\";
+				var dir = Path.Combine(ProjectTempDir, "Photos");
+
 				if (Directory.Exists(dir))
 				{
-					var files = Directory.EnumerateFiles($"{ProjectTempDir}\\Photos\\");
+					var files = Directory.EnumerateFiles(dir);
 					foreach (var file in files)
 					{
 						var name = Path.GetFileName(file);
@@ -43,15 +45,33 @@ namespace SwMapsLib.IO
 					}
 				}
 			}
+
+			//GNSS Raw Data
+			var gnssRawDir = Path.Combine(ProjectTempDir, "RawFiles");
+			if (Directory.Exists(gnssRawDir))
+			{
+				var files = Directory.EnumerateFiles(gnssRawDir);
+				foreach (var file in files)
+				{
+					project.GnssRawDataFiles.Add(file);
+				}
+			}
 			return project;
 		}
 
 
-		public SwmzReader(string swmzPath)
+		public SwmzReader(string swmzPath, bool shortenZipNames = false)
 		{
 			SwmzPath = swmzPath;
+			ShortenZipNames = shortenZipNames;
 
-			ProjectTempDir = TempFolder + Path.GetFileNameWithoutExtension(swmzPath).Trim();
+			if (ShortenZipNames) {
+			    
+				ProjectTempDir =Path.Combine( TempFolder + Path.GetFileNameWithoutExtension(Path.GetTempFileName()));
+			}
+			else {
+				ProjectTempDir =Path.Combine(TempFolder + Path.GetFileNameWithoutExtension(swmzPath).Trim());
+			}
 			if (Directory.Exists(ProjectTempDir))
 				Directory.Delete(ProjectTempDir, true);
 

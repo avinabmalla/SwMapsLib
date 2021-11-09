@@ -17,6 +17,8 @@ namespace SwMapsLib.Data
 		public List<SwMapsProjectAttribute> ProjectAttributes = new List<SwMapsProjectAttribute>();
 
 		public Dictionary<string, byte[]> MediaFiles = new Dictionary<string, byte[]>();
+		public List<string> GnssRawDataFiles { get; set; } = new List<string>();
+
 
 		public string DatabasePath { get; }
 		public string MediaFolderPath { get; }

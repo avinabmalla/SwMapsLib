@@ -88,7 +88,14 @@ namespace SwMapsLib.IO
 						ZipArchiveEntry phEntry = archive.CreateEntry($"Photos/{fileName}");
 						using (BinaryWriter writer = new BinaryWriter(phEntry.Open()))
 						{
-							writer.Write(File.ReadAllBytes(ph));
+							if (File.Exists(ph))
+							{
+								writer.Write(File.ReadAllBytes(ph));
+							}
+							else if (File.Exists(Path.Combine(Project.MediaFolderPath, ph)))
+							{
+								writer.Write(File.ReadAllBytes(Path.Combine(Project.MediaFolderPath, ph)));
+							}
 						}
 					}
 				}

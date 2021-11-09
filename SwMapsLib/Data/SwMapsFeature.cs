@@ -12,7 +12,7 @@ namespace SwMapsLib.Data
 		public int FeatureID { get; set; }
 		public string UUID { get; set; } = Guid.NewGuid().ToString();
 		public string Name { get; set; }
-		public string Remarks { get; set; }
+		public string Remarks { get; set; } = "";
 		public string LayerID { get; set; }
 		public SwMapsGeometryType GeometryType { get; set; }
 

@@ -148,7 +148,7 @@ namespace SwMapsLib.IO
 		public List<SwMapsFeature> ReadAllFeatures(SQLiteConnection conn)
 		{
 			var ret = new List<SwMapsFeature>();
-			var sql = "SELECT * FROM features";
+			var sql = "SELECT rowid,* FROM features";
 			using (var cmd = new SQLiteCommand(sql, conn))
 			using (var reader = cmd.ExecuteReader())
 				while (reader.Read())
@@ -157,6 +157,7 @@ namespace SwMapsLib.IO
 					feature.UUID = reader.ReadString("uuid");
 					feature.LayerID = reader.ReadString("layer_id");
 					feature.Name = reader.ReadString("name");
+					feature.FeatureID = (int)reader.ReadInt64("rowid");
 					feature.Remarks = reader.ReadString("remarks");
 					feature.Points = ReadPoints(conn, feature.UUID);
 					feature.AttributeValues = ReadAttributeValues(conn, feature.UUID);
@@ -208,10 +209,25 @@ namespace SwMapsLib.IO
 				while (pointReader.Read())
 				{
 					SwMapsPoint vertex = new SwMapsPoint();
+					vertex.ID = pointReader.ReadString("uuid");
+					vertex.FeatureID = pointReader.ReadString("fid");
+					vertex.Seq = pointReader.ReadInt32("seq");
+
 					vertex.Latitude = pointReader.ReadDouble("lat");
 					vertex.Longitude = pointReader.ReadDouble("lon");
 					vertex.Elevation = pointReader.ReadDouble("elv");
+					vertex.OrthoHeight = pointReader.ReadDouble("ortho_ht");
+					
+
 					vertex.Time = pointReader.ReadInt64("time");
+					vertex.StartTime = pointReader.ReadInt64("start_time");
+					
+					vertex.InstrumentHeight = pointReader.ReadDouble("instrument_ht");
+					vertex.FixID = pointReader.ReadInt32("fix_quality");
+					
+					vertex.Speed = pointReader.ReadDouble("speed");
+					vertex.SnapID = pointReader.ReadString("snap_id");
+					vertex.AdditionalData = pointReader.ReadString("additional_data");
 					ret.Add(vertex);
 				}
 			return ret;

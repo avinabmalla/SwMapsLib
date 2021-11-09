@@ -2,10 +2,30 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.6.0</Version>
+    <Authors>Avinab Malla</Authors>
+    <Company>Aviyaan Tech</Company>
+    <Description>SwMapsLib Extensions for converting SW Maps projects to KMZ, Shapefiles and GeoPackages</Description>
+    <PackageProjectUrl>https://github.com/avinabmalla/SwMapsLib</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>playstore.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/avinabmalla/SwMapsLib</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>SW Maps, swmz, swm2, KMZ, Shapefile, SHP, GPKG</PackageTags>
+    <Copyright>Copyright © Avinab Malla, 2021</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\map_photo.png" />
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="playstore.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -14,10 +34,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SwMapsLib\SwMapsLib.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="PostGis\" />
   </ItemGroup>
 
   <ItemGroup>

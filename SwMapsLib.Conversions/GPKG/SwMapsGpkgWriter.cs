@@ -359,7 +359,7 @@ namespace SwMapsLib.Conversions.GPKG
 				cv.Add("UUID", f.UUID);
 				cv.Add("FID", f.FeatureID);
 				cv.Add("geom", geom);
-				cv.Add("_description", f.Remarks.Trim());
+				cv.Add("_description", f.Remarks?.Trim() ?? "");
 
 				if (layer.GeometryType == SwMapsGeometryType.Point)
 				{
