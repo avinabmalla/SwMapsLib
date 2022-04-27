@@ -424,7 +424,7 @@ namespace SwMapsLib.Conversions.KMZ
 			folders[layer.UUID].Add("<description>" + GetAttributeTable(layer, mpt) + "</description>");
 			folders[layer.UUID].Add($"<styleUrl>#{styleName}</styleUrl>");
 
-			var pt = points[0];
+			var pt = points.Last();
 
 			folders[layer.UUID].Add("<Point>");
 			folders[layer.UUID].Add("<coordinates>" + pt.Longitude + "," + pt.Latitude + "," + pt.Elevation + "</coordinates>");

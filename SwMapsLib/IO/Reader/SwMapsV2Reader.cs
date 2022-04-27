@@ -30,7 +30,7 @@ namespace SwMapsLib.IO
 				var project = new SwMapsProject(Swm2Path, mediaPath);
 				project.ProjectInfo = ReadProjectInfo(conn);
 				project.FeatureLayers = ReadAllFeatureLayers(conn);
-				project.Features = ReadAllFeatures(conn);
+				project.Features = ReadAllFeatures(conn, project.FeatureLayers);
 				project.Tracks = ReadAllTracks(conn);
 				project.PhotoPoints = ReadAllPhotoPoints(conn);
 				project.ProjectAttributes = ReadProjectAttributes(conn);
@@ -145,7 +145,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		public List<SwMapsFeature> ReadAllFeatures(SQLiteConnection conn)
+		public List<SwMapsFeature> ReadAllFeatures(SQLiteConnection conn,List<SwMapsFeatureLayer> layers)
 		{
 			var ret = new List<SwMapsFeature>();
 			var sql = "SELECT rowid,* FROM features";
@@ -162,7 +162,7 @@ namespace SwMapsLib.IO
 					feature.Points = ReadPoints(conn, feature.UUID);
 					feature.AttributeValues = ReadAttributeValues(conn, feature.UUID);
 
-
+					feature.GeometryType = layers.FirstOrDefault(l => l.UUID == feature.LayerID)?.GeometryType ?? SwMapsGeometryType.Point;
 					ret.Add(feature);
 				}
 			return ret;

@@ -14,6 +14,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>SW Maps, swmz, swm2, KMZ, Shapefile, SHP, GPKG</PackageTags>
     <Copyright>Copyright © Avinab Malla, 2021</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +22,10 @@
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
     <None Include="playstore.png">
       <Pack>True</Pack>

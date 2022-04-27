@@ -12,7 +12,7 @@ namespace SwMapsLib.IO
 	//Reads SW Maps V1 and V2 Project Files
 	public class SwmzReader
 	{
-		static string TempFolder = System.IO.Path.GetTempPath() + "\\SW_Maps\\";
+		static string TempFolder =Path.Combine(System.IO.Path.GetTempPath() ,"SW_Maps");
 
 		public readonly string SwmzPath;
 		public readonly string DbPath; //Extracted path
@@ -65,13 +65,15 @@ namespace SwMapsLib.IO
 			SwmzPath = swmzPath;
 			ShortenZipNames = shortenZipNames;
 
-			if (ShortenZipNames) {
-			    
-				ProjectTempDir =Path.Combine( TempFolder + Path.GetFileNameWithoutExtension(Path.GetTempFileName()));
+			if (ShortenZipNames)
+			{
+				ProjectTempDir = Path.Combine(TempFolder, Path.GetFileNameWithoutExtension(Path.GetTempFileName()));
 			}
-			else {
-				ProjectTempDir =Path.Combine(TempFolder + Path.GetFileNameWithoutExtension(swmzPath).Trim());
+			else
+			{
+				ProjectTempDir = Path.Combine(TempFolder, Path.GetFileNameWithoutExtension(swmzPath).Trim());
 			}
+
 			if (Directory.Exists(ProjectTempDir))
 				Directory.Delete(ProjectTempDir, true);
 

@@ -82,6 +82,8 @@ namespace SwMapsLib.Data
 		{
 			foreach (var f in Features)
 			{
+				f.Points.OrderBy(p => p.Seq);
+
 				for (int i = 0; i < f.Points.Count; i++)
 				{
 					f.Points[i].Seq = i;
@@ -91,6 +93,9 @@ namespace SwMapsLib.Data
 
 			foreach (var t in Tracks)
 			{
+				t.Vertices.OrderBy(p => p.Seq);
+
+
 				for (int i = 0; i < t.Vertices.Count; i++)
 				{
 					t.Vertices[i].Seq = i;
