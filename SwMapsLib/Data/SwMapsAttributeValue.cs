@@ -18,5 +18,28 @@ namespace SwMapsLib.Data
 		{
 			return Value;
 		}
+
+		public int? IntValue
+		{
+			get
+			{
+				int ret = 0;
+				bool parsed = Int32.TryParse(Value, out ret);
+				if (!parsed) return null;
+				return ret;
+			}
+		}
+
+		public double? DoubleValue
+		{
+			get
+			{
+				double ret = 0;
+				bool parsed = Double.TryParse(Value, out ret);
+				if (!parsed) return null;
+				return ret;
+			}
+		}
+
 	}
 }

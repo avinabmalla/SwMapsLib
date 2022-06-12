@@ -12,11 +12,11 @@
     <PackageProjectUrl>https://github.com/avinabmalla/SwMapsLib</PackageProjectUrl>
     <PackageLicenseExpression></PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
-    <Copyright>Copyright © Avinab Malla, 2021</Copyright>
+    <Copyright>Copyright © Avinab Malla, 2022</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <AssemblyVersion>1.0.6.0</AssemblyVersion>
-    <FileVersion>1.0.6.0</FileVersion>
-    <Version>1.0.6.0</Version>
+    <AssemblyVersion>1.0.7.0</AssemblyVersion>
+    <FileVersion>1.0.7.0</FileVersion>
+    <Version>1.0.7.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
