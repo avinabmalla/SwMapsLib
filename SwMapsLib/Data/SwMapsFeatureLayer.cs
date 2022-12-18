@@ -21,7 +21,7 @@ namespace SwMapsLib.Data
 		public bool Active { get; set; } = true;
 		public string LabelFieldID { get; set; } = "";
 		public byte[] PngSymbol { get; set; }
-
+		public int ZIndex { get; set; } = 0;
 		public List<SwMapsAttributeField> AttributeFields { get; set; } = new List<SwMapsAttributeField>();
 		
 		public string LabelFieldName => AttributeFields.FirstOrDefault(af => af.UUID == LabelFieldID)?.FieldName ?? "";

@@ -145,7 +145,7 @@ namespace SwMapsLib.IO
 			return ret;
 		}
 
-		public List<SwMapsFeature> ReadAllFeatures(SQLiteConnection conn,List<SwMapsFeatureLayer> layers)
+		public List<SwMapsFeature> ReadAllFeatures(SQLiteConnection conn, List<SwMapsFeatureLayer> layers)
 		{
 			var ret = new List<SwMapsFeature>();
 			var sql = "SELECT rowid,* FROM features";
@@ -194,6 +194,7 @@ namespace SwMapsLib.IO
 					layer.Active = reader.ReadInt32("active") == 1;
 					layer.Drawn = reader.ReadInt32("drawn") == 1;
 					layer.PngSymbol = reader.ReadBlob("png_symbol");
+					layer.ZIndex = reader.ReadInt32("z_index");
 					layer.AttributeFields = ReadAttributeFields(conn, layer.UUID);
 					ret.Add(layer);
 				}
@@ -217,14 +218,14 @@ namespace SwMapsLib.IO
 					vertex.Longitude = pointReader.ReadDouble("lon");
 					vertex.Elevation = pointReader.ReadDouble("elv");
 					vertex.OrthoHeight = pointReader.ReadDouble("ortho_ht");
-					
+
 
 					vertex.Time = pointReader.ReadInt64("time");
 					vertex.StartTime = pointReader.ReadInt64("start_time");
-					
+
 					vertex.InstrumentHeight = pointReader.ReadDouble("instrument_ht");
 					vertex.FixID = pointReader.ReadInt32("fix_quality");
-					
+
 					vertex.Speed = pointReader.ReadDouble("speed");
 					vertex.SnapID = pointReader.ReadString("snap_id");
 					vertex.AdditionalData = pointReader.ReadString("additional_data");

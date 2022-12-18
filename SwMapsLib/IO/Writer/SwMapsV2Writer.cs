@@ -19,7 +19,7 @@ namespace SwMapsLib.IO
 	/// </summary>
 	public class SwMapsV2Writer
 	{
-		public const int Version = 111;
+		public const int Version = 114;
 		SwMapsProject Project;
 		SQLiteConnection conn;
 		SQLiteTransaction sqlTrans;
@@ -33,7 +33,7 @@ namespace SwMapsLib.IO
 		public void WriteSwmapsDb(string path)
 		{
 			if (File.Exists(path)) File.Delete(path);
-			
+
 			Project.ResequenceAll();
 
 			conn = new SQLiteConnection($"Data Source={path};Version=3;");
@@ -67,10 +67,10 @@ namespace SwMapsLib.IO
 
 		void CreateTables()
 		{
-			conn.ExecuteSQL("CREATE TABLE project_info(attr TEXT, value TEXT);", sqlTrans);
+			conn.ExecuteSQL("CREATE TABLE project_info(attr TEXT UNIQUE, value TEXT);", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE project_attributes(" +
-				"attr TEXT," +
+				"attr TEXT UNIQUE NOT NULL," +
 				"value TEXT," +
 				"data_type TEXT," +
 				"field_choices TEXT," +
@@ -78,7 +78,7 @@ namespace SwMapsLib.IO
 				"field_length INTEGER);", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE external_layers(" +
-				"uuid TEXT," +
+				"uuid TEXT UNIQUE NOT NULL," +
 				"name TEXT," +
 				"source_type TEXT," +
 				"full_path TEXT," +
@@ -89,8 +89,8 @@ namespace SwMapsLib.IO
 				"cache NUMBER);", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE feature_layers(" +
-				"uuid TEXT," +
-				"name TEXT," +
+				"uuid TEXT UNIQUE NOT NULL," +
+				"name TEXT UNIQUE NOT NULL," +
 				"group_name TEXT," +
 				"geom_type TEXT," +
 				"point_symbol TEXT," +
@@ -100,10 +100,11 @@ namespace SwMapsLib.IO
 				"label_field_id TEXT," +
 				"active INTEGER," +
 				"drawn INTEGER," +
-				"png_symbol BLOB)", sqlTrans);
+				"png_symbol BLOB," +
+				"z_index INTEGER)", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE attribute_fields(" +
-				"uuid TEXT," +
+				"uuid TEXT UNIQUE NOT NULL," +
 				"layer_id TEXT," +
 				"field_name TEXT," +
 				"data_type TEXT," +
@@ -116,13 +117,13 @@ namespace SwMapsLib.IO
 				"value TEXT);", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE features(" +
-				"uuid TEXT," +
+				"uuid TEXT UNIQUE NOT NULL," +
 				"layer_id TEXT," +
 				"name TEXT," +
 				"remarks TEXT)", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE points(" +
-				"uuid TEXT," +
+				"uuid TEXT UNIQUE NOT NULL," +
 				"fid TEXT," +
 				"seq NUMBER," +
 				"lat NUMBER," +
@@ -138,7 +139,7 @@ namespace SwMapsLib.IO
 				"additional_data TEXT)", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE photos(" +
-				"uuid TEXT," +
+				"uuid TEXT UNIQUE NOT NULL," +
 				"remarks TEXT," +
 				"photo_path TEXT)", sqlTrans);
 
@@ -154,10 +155,18 @@ namespace SwMapsLib.IO
 				"label_field TEXT)", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE tracks(" +
-				"uuid TEXT," +
-				"name TEXT," +
+				"uuid TEXT UNIQUE NOT NULL," +
+				"name TEXT UNIQUE NOT NULL," +
 				"color TEXT," +
 				"description TEXT);", sqlTrans);
+
+			conn.ExecuteSQL("CREATE INDEX IF NOT EXISTS points_fid_index on points(fid);", sqlTrans);
+			conn.ExecuteSQL("CREATE INDEX IF NOT EXISTS points_uuid_index on points(uuid);", sqlTrans);
+			conn.ExecuteSQL("CREATE INDEX IF NOT EXISTS field_layerid_index on attribute_fields(layer_id);", sqlTrans);
+			conn.ExecuteSQL("CREATE INDEX IF NOT EXISTS attrvalue_fid_index on attribute_values(item_id);", sqlTrans);
+			conn.ExecuteSQL("CREATE INDEX IF NOT EXISTS feature_id_index on features(uuid);", sqlTrans);
+			conn.ExecuteSQL("CREATE INDEX IF NOT EXISTS feature_layerid_index on features(layer_id);", sqlTrans);
+
 		}
 
 		void WriteProjectInfo()
@@ -178,7 +187,7 @@ namespace SwMapsLib.IO
 				var cv = new Dictionary<string, object>();
 				cv["attr"] = attr.Name;
 				cv["value"] = attr.Value;
-				cv["data_type"] =SwMapsTypes.ProjectAttributeTypeToString( attr.DataType);
+				cv["data_type"] = SwMapsTypes.ProjectAttributeTypeToString(attr.DataType);
 				cv["field_choices"] = string.Join("||", attr.Choices);
 				cv["required_field"] = attr.IsRequired ? 1 : 0;
 				cv["field_length"] = attr.FieldLength;
@@ -196,7 +205,7 @@ namespace SwMapsLib.IO
 				cv["name"] = lyr.Name;
 				cv["group_name"] = lyr.GroupName;
 				cv["geom_type"] = SwMapsTypes.GeometryTypeToString(lyr.GeometryType);
-				cv["point_symbol"] =SwMapsTypes.PointShapeToString(lyr.PointShape);
+				cv["point_symbol"] = SwMapsTypes.PointShapeToString(lyr.PointShape);
 				cv["color"] = lyr.Color;
 				cv["fill_color"] = lyr.FillColor;
 				cv["line_width"] = lyr.LineWidth;
@@ -204,6 +213,7 @@ namespace SwMapsLib.IO
 				cv["active"] = lyr.Active ? 1 : 0;
 				cv["drawn"] = lyr.Drawn ? 1 : 0;
 				cv["png_symbol"] = lyr.PngSymbol;
+				cv["z_index"] = lyr.ZIndex;
 				conn.Insert("feature_layers", cv, sqlTrans);
 			}
 		}
@@ -356,7 +366,7 @@ namespace SwMapsLib.IO
 				}
 			}
 		}
-		
-		
+
+
 	}
 }
