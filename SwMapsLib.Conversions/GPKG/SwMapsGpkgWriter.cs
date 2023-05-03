@@ -7,6 +7,7 @@ using SwMapsLib.Utils;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Linq;
+using SwMapsLib.Extensions;
 
 namespace SwMapsLib.Conversions.GPKG
 {
@@ -34,20 +35,31 @@ namespace SwMapsLib.Conversions.GPKG
 
 		public void Export(string path)
 		{
-			conn = new SQLiteConnection($"Data Source={path};Version=3;");
-			conn.Open();
-			sqlTrans = conn.BeginTransaction();
-			CreateTables();
-
-			foreach (var l in Project.FeatureLayers)
+			try
 			{
-				if (LayersToExport.Contains(l.Name) || ExportAllLayers) AddLayer(l);
-			}
+				conn = new SQLiteConnection($"Data Source={path};Version=3;");
+				conn.Open();
+				sqlTrans = conn.BeginTransaction();
+				CreateTables();
 
-			if (ExportPhotos) AddPhotos();
-			if (ExportTracks) AddTracks();
-			sqlTrans.Commit();
-			conn.Close();
+				foreach (var l in Project.FeatureLayers)
+				{
+					if (LayersToExport.Contains(l.Name) || ExportAllLayers) AddLayer(l);
+				}
+
+				if (ExportPhotos) AddPhotos();
+				if (ExportTracks) AddTracks();
+				sqlTrans.Commit();
+			}
+			finally
+			{
+				try
+				{
+					sqlTrans.Dispose();
+					conn.CloseConnection();
+				}
+				catch { }
+			}
 		}
 
 		private void CreateTables()
@@ -400,7 +412,7 @@ namespace SwMapsLib.Conversions.GPKG
 							var filePath = attr.Value;
 							if (File.Exists(filePath) == false)
 							{
-								filePath = System.IO.Path.Combine(Project.MediaFolderPath, attr.Value);
+								filePath = Path.Combine(Project.MediaFolderPath, attr.Value);
 							}
 
 							if (File.Exists(filePath))

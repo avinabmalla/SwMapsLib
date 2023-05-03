@@ -1,4 +1,5 @@
 ﻿using SwMapsLib.Data;
+using SwMapsLib.Extensions;
 using SwMapsLib.Utils;
 using System;
 using System.Collections.Generic;
@@ -22,29 +23,35 @@ namespace SwMapsLib.IO
 		{
 			using (var conn = new SQLiteConnection($"Data Source={Swm2Path};Version=3;"))
 			{
-				conn.Open();
-
-				var mediaPath = Directory.GetParent(Path.GetDirectoryName(Swm2Path)).FullName;
-				mediaPath = Path.Combine(mediaPath, "Photos");
-
-				var project = new SwMapsProject(Swm2Path, mediaPath);
-				project.ProjectInfo = ReadProjectInfo(conn);
-				project.FeatureLayers = ReadAllFeatureLayers(conn);
-				project.Features = ReadAllFeatures(conn, project.FeatureLayers);
-				project.Tracks = ReadAllTracks(conn);
-				project.PhotoPoints = ReadAllPhotoPoints(conn);
-				project.ProjectAttributes = ReadProjectAttributes(conn);
-
-				foreach (var f in project.Features)
+				try
 				{
-					var layer = project.GetLayer(f.LayerID);
-					foreach (var a in f.AttributeValues)
+					conn.Open();
+
+					var mediaPath = Directory.GetParent(Path.GetDirectoryName(Swm2Path)).FullName;
+					mediaPath = Path.Combine(mediaPath, "Photos");
+
+					var project = new SwMapsProject(Swm2Path, mediaPath);
+					project.ProjectInfo = ReadProjectInfo(conn);
+					project.FeatureLayers = ReadAllFeatureLayers(conn);
+					project.Features = ReadAllFeatures(conn, project.FeatureLayers);
+					project.Tracks = ReadAllTracks(conn);
+					project.PhotoPoints = ReadAllPhotoPoints(conn);
+					project.ProjectAttributes = ReadProjectAttributes(conn);
+
+					foreach (var f in project.Features)
 					{
-						a.FieldName = layer.AttributeFields.FirstOrDefault(e => e.UUID == a.FieldID)?.FieldName ?? "";
+						var layer = project.GetLayer(f.LayerID);
+						foreach (var a in f.AttributeValues)
+						{
+							a.FieldName = layer.AttributeFields.FirstOrDefault(e => e.UUID == a.FieldID)?.FieldName ?? "";
+						}
 					}
+					return project;
 				}
-				conn.Close();
-				return project;
+				finally
+				{
+					conn.CloseConnection();
+				}
 			}
 		}
 

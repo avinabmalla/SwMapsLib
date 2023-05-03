@@ -1,4 +1,5 @@
 ﻿using SwMapsLib.Data;
+using SwMapsLib.Extensions;
 using SwMapsLib.Utils;
 using System;
 using System.Collections.Generic;
@@ -28,22 +29,30 @@ namespace SwMapsLib.IO
 		{
 			using (var conn = new SQLiteConnection($"Data Source={SwMapsPath};Version=3;"))
 			{
-				conn.Open();
+				try
+				{
+					conn.Open();
 
-				var mediaPath = Directory.GetParent(Path.GetDirectoryName(SwMapsPath)).FullName;
-				mediaPath = Path.Combine(mediaPath, "Photos");
+					var mediaPath = Directory.GetParent(Path.GetDirectoryName(SwMapsPath)).FullName;
+					mediaPath = Path.Combine(mediaPath, "Photos");
 
-				var project = new SwMapsProject(SwMapsPath, mediaPath);
-				project.ProjectInfo = ReadProjectInfo(conn);
-				project.ProjectAttributes = ReadAllProjectAttributes(conn);
-				project.FeatureLayers = ReadAllFeatureLayers(conn);
-				project.Features = ReadAllFeatures(conn);
-				project.Tracks = ReadAllTracks(conn);
-				project.PhotoPoints = ReadAllPhotoPoints(conn);
-				conn.Close();
+					var project = new SwMapsProject(SwMapsPath, mediaPath);
+					project.ProjectInfo = ReadProjectInfo(conn);
+					project.ProjectAttributes = ReadAllProjectAttributes(conn);
+					project.FeatureLayers = ReadAllFeatureLayers(conn);
+					project.Features = ReadAllFeatures(conn);
+					project.Tracks = ReadAllTracks(conn);
+					project.PhotoPoints = ReadAllPhotoPoints(conn);
 
-				return project;
+					return project;
+				}
+				finally
+				{
+					conn.CloseConnection();
+				}
 			}
+
+			
 		}
 		private Dictionary<string, string> ReadProjectInfo(SQLiteConnection conn)
 		{

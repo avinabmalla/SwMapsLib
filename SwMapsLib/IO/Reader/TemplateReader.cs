@@ -1,4 +1,5 @@
 ﻿using SwMapsLib.Data;
+using SwMapsLib.Extensions;
 using SwMapsLib.Utils;
 using System;
 using System.Collections.Generic;
@@ -19,23 +20,30 @@ namespace SwMapsLib.IO
 		{
 			using (var conn = new SQLiteConnection($"Data Source={TemplatePath};Version=3;"))
 			{
-				conn.Open();
-				var version =(long)conn.ExecuteScalar("pragma user_version;");
-				SwMapsTemplate template = null;
-				if(version< 100)
+				try
 				{
-					template = new TemplateV1Reader().Read(TemplatePath, conn);
-				}
-				else
-				{
-					template = new TemplateV2Reader().Read(TemplatePath, conn);
-				}
-				conn.Close();
 
-				return template;
+					conn.Open();
+					var version = (long)conn.ExecuteScalar("pragma user_version;");
+					SwMapsTemplate template = null;
+					if (version < 100)
+					{
+						template = new TemplateV1Reader().Read(TemplatePath, conn);
+					}
+					else
+					{
+						template = new TemplateV2Reader().Read(TemplatePath, conn);
+					}
+
+					return template;
+				}
+				finally
+				{
+					conn.CloseConnection();
+				}
 			}
 
 		}
 
-}
+	}
 }

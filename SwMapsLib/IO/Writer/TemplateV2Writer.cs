@@ -1,4 +1,5 @@
 ﻿using SwMapsLib.Data;
+using SwMapsLib.Extensions;
 using SwMapsLib.Utils;
 using System;
 using System.Collections.Generic;
@@ -24,28 +25,39 @@ namespace SwMapsLib.IO
 
 			using (var conn = new SQLiteConnection($"Data Source={path};Version=3;"))
 			{
-				conn.Open();
-				conn.ExecuteSQL(String.Format("pragma user_version = {0};", Version));
-
-				using (var sqlTrans = conn.BeginTransaction())
+				try
 				{
-					CreateTables(conn, sqlTrans);
+					conn.Open();
+					conn.ExecuteSQL(String.Format("pragma user_version = {0};", Version));
 
-					WriteTemplateInfo(conn, sqlTrans);
-					WriteProjectAttributes(conn, sqlTrans);
+					using (var sqlTrans = conn.BeginTransaction())
+					{
+						try
+						{
+							CreateTables(conn, sqlTrans);
 
-					WriteFeatureLayers(conn, sqlTrans);
-					WriteAttributeFields(conn, sqlTrans);
+							WriteTemplateInfo(conn, sqlTrans);
+							WriteProjectAttributes(conn, sqlTrans);
 
-					sqlTrans.Commit();
+							WriteFeatureLayers(conn, sqlTrans);
+							WriteAttributeFields(conn, sqlTrans);
 
+							sqlTrans.Commit();
+						}
+						catch (Exception ex)
+						{
+							sqlTrans.Rollback();
+							throw ex;
+						}
+
+					}
 				}
-				conn.Close();
+				finally
+				{
+					conn.CloseConnection();
+				}
 			}
 
-			//https://stackoverflow.com/questions/8511901/system-data-sqlite-close-not-releasing-database-file
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
 		}
 
 		void CreateTables(SQLiteConnection conn, SQLiteTransaction sqlTrans)

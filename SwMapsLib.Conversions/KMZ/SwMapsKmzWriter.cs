@@ -179,7 +179,7 @@ namespace SwMapsLib.Conversions.KMZ
 			kmlFile.Add("<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
 
 			kmlFile.Add("<Document>");
-			kmlFile.Add($"<name>{System.IO.Path.GetFileNameWithoutExtension(ExportPath)}</name>");
+			kmlFile.Add($"<name>{Path.GetFileNameWithoutExtension(ExportPath)}</name>");
 
 			var projectAttributes = Project.ProjectAttributes;
 			if (projectAttributes.Count + AdditionalAttributes.Count > 0)

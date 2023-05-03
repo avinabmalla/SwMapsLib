@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Data.SQLite;
 using SwMapsLib.Utils;
 using System.IO;
+using SwMapsLib.Extensions;
 
 namespace SwMapsLib.IO
 {
@@ -38,36 +39,45 @@ namespace SwMapsLib.IO
 
 			using (var conn = new SQLiteConnection($"Data Source={path};Version=3;"))
 			{
-				conn.Open();
-				conn.ExecuteSQL(String.Format("pragma user_version = {0};", Version));
-
-
-				using (var sqlTrans = conn.BeginTransaction())
+				try
 				{
+					conn.Open();
+					conn.ExecuteSQL(String.Format("pragma user_version = {0};", Version));
 
-					CreateTables(conn, sqlTrans);
-					WriteProjectInfo(conn, sqlTrans);
-					WriteProjectAttributes(conn, sqlTrans);
 
-					WriteFeatureLayers(conn, sqlTrans);
-					WriteAttributeFields(conn, sqlTrans);
+					using (var sqlTrans = conn.BeginTransaction())
+					{
 
-					WriteFeatures(conn, sqlTrans);
-					WriteFeatureAttributes(conn, sqlTrans);
+						try
+						{
+							CreateTables(conn, sqlTrans);
+							WriteProjectInfo(conn, sqlTrans);
+							WriteProjectAttributes(conn, sqlTrans);
 
-					WritePhotos(conn, sqlTrans);
-					WriteTracks(conn, sqlTrans);
+							WriteFeatureLayers(conn, sqlTrans);
+							WriteAttributeFields(conn, sqlTrans);
 
-					sqlTrans.Commit();
+							WriteFeatures(conn, sqlTrans);
+							WriteFeatureAttributes(conn, sqlTrans);
+
+							WritePhotos(conn, sqlTrans);
+							WriteTracks(conn, sqlTrans);
+
+							sqlTrans.Commit();
+						}
+						catch (Exception ex)
+						{
+							sqlTrans.Rollback();
+							throw ex;
+						}
+					}
+					OnDbWrite?.Invoke(this, conn);
 				}
-				OnDbWrite?.Invoke(this, conn);
-				conn.Close();
-
+				finally
+				{
+					conn.CloseConnection();
+				}
 			}
-
-			//https://stackoverflow.com/questions/8511901/system-data-sqlite-close-not-releasing-database-file
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
 		}
 
 
