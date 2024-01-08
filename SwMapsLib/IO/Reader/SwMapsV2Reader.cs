@@ -236,6 +236,10 @@ namespace SwMapsLib.IO
 					vertex.Speed = pointReader.ReadDouble("speed");
 					vertex.SnapID = pointReader.ReadString("snap_id");
 					vertex.AdditionalData = pointReader.ReadString("additional_data");
+					vertex.Bearing = pointReader.ReadDouble("bearing");
+					vertex.AccuracyH = pointReader.ReadDouble("accuracy_h");
+					vertex.AccuracyV = pointReader.ReadDouble("accuracy_v");
+					vertex.PositionData = pointReader.ReadString("pos_data");
 					ret.Add(vertex);
 				}
 			return ret;

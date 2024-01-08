@@ -20,7 +20,7 @@ namespace SwMapsLib.IO
 	/// </summary>
 	public class SwMapsV2Writer
 	{
-		public const int Version = 114;
+		public const int Version = 115;
 		SwMapsProject Project;
 		SQLiteConnection conn;
 		SQLiteTransaction sqlTrans;
@@ -144,6 +144,10 @@ namespace SwMapsLib.IO
 				"fix_quality NUMBER," +
 				"speed NUMBER," +
 				"snap_id TEXT," +
+				"bearing NUMBER," +
+				"accuracy_h NUMBER," +
+				"accuracy_v NUMBER," +
+				"pos_data TEXT," +
 				"additional_data TEXT)", sqlTrans);
 
 			conn.ExecuteSQL("CREATE TABLE photos(" +
@@ -275,6 +279,10 @@ namespace SwMapsLib.IO
 					cv1["speed"] = pt.Speed;
 					cv1["snap_id"] = pt.SnapID;
 					cv1["additional_data"] = pt.AdditionalData;
+					cv1["bearing"] = pt.Bearing;
+					cv1["accuracy_h"] = pt.AccuracyH;
+					cv1["accuracy_v"] = pt.AccuracyV;
+					cv1["pos_data"] = pt.PositionData;
 
 					conn.Insert("points", cv1, sqlTrans);
 				}
@@ -335,6 +343,10 @@ namespace SwMapsLib.IO
 				cv1["speed"] = pt.Speed;
 				cv1["snap_id"] = pt.SnapID;
 				cv1["additional_data"] = pt.AdditionalData;
+				cv1["bearing"] = pt.Bearing;
+				cv1["accuracy_h"] = pt.AccuracyH;
+				cv1["accuracy_v"] = pt.AccuracyV;
+				cv1["pos_data"] = pt.PositionData;
 
 				conn.Insert("points", cv1, sqlTrans);
 			}
@@ -369,6 +381,10 @@ namespace SwMapsLib.IO
 					cv1["speed"] = pt.Speed;
 					cv1["snap_id"] = pt.SnapID;
 					cv1["additional_data"] = pt.AdditionalData;
+					cv1["bearing"] = pt.Bearing;
+					cv1["accuracy_h"] = pt.AccuracyH;
+					cv1["accuracy_v"] = pt.AccuracyV;
+					cv1["pos_data"] = pt.PositionData;
 
 					conn.Insert("points", cv1, sqlTrans);
 				}

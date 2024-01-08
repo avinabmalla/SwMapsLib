@@ -28,14 +28,17 @@
     <None Update="Data\30101001_con.swmaps">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Data\339865.swmz">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Data\40101001_inv.swm2">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Data\SW_WSP_V3_Rural_Template.swmt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\SW_WSP_V3_Rural_Template_V1.swmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\SW_WSP_V3_Rural_Template_V2.swmt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\TestSwmz.swmz">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

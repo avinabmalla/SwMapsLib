@@ -19,7 +19,7 @@ namespace SwMapsLibTests
 		[TestMethod]
 		public void ReadSwmz()
 		{
-			var path = @"Data\339865.swmz";
+			var path = @"Data\30101001_con.swmz";
 			var reader = new SwmzReader(path);
 			var project = reader.Read();
 			var pointFeatures = project.Features.Where(f => f.GeometryType == SwMapsLib.Data.SwMapsGeometryType.Point).ToList();

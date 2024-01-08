@@ -23,6 +23,10 @@ namespace SwMapsLib.Data
 		public int FixID { get; set; }
 		public string SnapID { get; set; }
 		public string AdditionalData { get; set; }
+		public double Bearing { get; set; }
+		public double AccuracyH { get; set; }
+		public double AccuracyV { get; set; }
+		public string PositionData { get; set; }
 
 		
 
