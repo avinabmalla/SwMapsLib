@@ -11,6 +11,7 @@ namespace SwMapsLib.Data
 		Text,
 		Numeric,
 		Options,
+		Checklist,
 		Photo,
 		Audio,
 		Video
