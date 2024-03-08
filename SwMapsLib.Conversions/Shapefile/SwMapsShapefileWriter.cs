@@ -251,7 +251,7 @@ namespace SwMapsLib.Conversions.Shapefile
 						Double.TryParse(attr.Value, out value);
 						attrTable.Add(fieldNames[field.FieldName], value);
 					}
-					else if (field.DataType == SwMapsAttributeType.Text || attr.DataType == SwMapsAttributeType.Options)
+					else if (field.DataType == SwMapsAttributeType.Text || attr.DataType == SwMapsAttributeType.Options || attr.DataType == SwMapsAttributeType.Checklist)
 					{
 						attrTable.Add(fieldNames[field.FieldName], attr.Value.Trim());
 					}

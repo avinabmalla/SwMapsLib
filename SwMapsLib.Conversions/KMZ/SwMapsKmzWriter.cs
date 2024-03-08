@@ -505,6 +505,18 @@ namespace SwMapsLib.Conversions.KMZ
 							Description += "<td><img src='files/" + fileName + "' width='200' /></td></tr>";
 						}
 					}
+					else if(field.DataType == SwMapsAttributeType.Checklist)
+					{
+						var checkedItems = valueText.Split(new string[] { "||" },StringSplitOptions.RemoveEmptyEntries);
+
+						Description += "<td><ul>";
+						foreach(var t in checkedItems)
+						{
+							Description += "<li>" + t + "</li>";
+						}
+						Description += "</ul></td></tr>";
+
+					}
 					else if (field.DataType == SwMapsAttributeType.Text
 							|| field.DataType == SwMapsAttributeType.Numeric
 							|| field.DataType == SwMapsAttributeType.Options)

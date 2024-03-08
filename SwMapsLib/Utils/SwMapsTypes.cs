@@ -36,7 +36,7 @@ namespace SwMapsLib.Utils
 			else if (dt == "OPTIONS")
 				ret = SwMapsAttributeType.Options;
 			else if (dt == "CHECKLIST")
-				ret = SwMapsAttributeType.Options;
+				ret = SwMapsAttributeType.Checklist;
 			else if (dt == "PHOTO")
 				ret = SwMapsAttributeType.Photo;
 			else if (dt == "AUDIO")

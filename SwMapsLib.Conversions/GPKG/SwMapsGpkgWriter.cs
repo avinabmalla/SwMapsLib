@@ -316,6 +316,7 @@ namespace SwMapsLib.Conversions.GPKG
 				if (attr.DataType == SwMapsAttributeType.Text) dataType = "TEXT";
 				if (attr.DataType == SwMapsAttributeType.Numeric) dataType = "REAL";
 				if (attr.DataType == SwMapsAttributeType.Options) dataType = "TEXT";
+				if (attr.DataType == SwMapsAttributeType.Checklist) dataType = "TEXT";
 				if (attr.DataType == SwMapsAttributeType.Photo) dataType = IncludeMediaFilesAsBlob ? "BLOB" : "TEXT";
 				if (attr.DataType == SwMapsAttributeType.Audio) dataType = IncludeMediaFilesAsBlob ? "BLOB" : "TEXT";
 				if (attr.DataType == SwMapsAttributeType.Video) dataType = IncludeMediaFilesAsBlob ? "BLOB" : "TEXT";
