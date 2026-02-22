@@ -12,15 +12,16 @@
     <PackageProjectUrl>https://github.com/avinabmalla/SwMapsLib</PackageProjectUrl>
     <PackageLicenseExpression></PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
-    <Copyright>Copyright © Avinab Malla, 2024</Copyright>
+    <Copyright>Copyright © Avinab Malla, 2026</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Version>1.1.1.0</Version>
+    <Version>1.1.2.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Title>SwMapsLib</Title>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
   </ItemGroup>
 
   <ItemGroup>
