@@ -28,6 +28,9 @@
     <None Update="Data\30101001_con.swmaps">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Data\30101001_con.swmz">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Data\40101001_inv.swm2">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

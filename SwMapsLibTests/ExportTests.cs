@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SwMapsLib.Conversions.GPKG;
 using SwMapsLib.Conversions.KMZ;
 using SwMapsLib.IO;
 using System;
@@ -21,5 +22,18 @@ namespace SwMapsLibTests
 			exporter.WriteKml(@"Data\\TestSwmz.kml");
 			exporter.WriteKmz(@"Data\\TestSwmz.kmz");
 		}
-	}
+        [TestMethod]
+        public void ReadSwmzAndExportGeopackage()
+        {
+            //30101001_con.swmz is depricated version of Swmz. No longer maintained
+            var path = @"Data\TestSwmz.swmz";
+            var reader = new SwmzReader(path);
+            var project = reader.Read();
+
+            var outPath = @"Data\TestSwmz.gpkg";
+            System.IO.File.Delete(outPath);
+            var writer = new SwMapsGpkgWriter(project);
+            writer.Export(outPath);
+        }
+    }
 }

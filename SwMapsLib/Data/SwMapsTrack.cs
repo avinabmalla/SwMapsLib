@@ -22,7 +22,7 @@ namespace SwMapsLib.Data
 			{
 				var pts = Vertices.Select(pt => pt.ToLatLng()).ToList();
 				double l = 0;
-				for (int i = 0; i < pts.Count; i++)
+				for (int i = 0; i < pts.Count-2; i++)
 				{
 					l += SphericalUtil.computeDistanceBetween(pts[i], pts[i + 1]);
 				}
